@@ -6,7 +6,7 @@ export const HOT_TRAINERS = [
   "W P Mullins", "G Elliott", "R Hannon", "G P Cromwell",
   "G & J Moore", "R A Fahey", "Ian Williams", "A W Carroll",
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
-  "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas"
+  "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland"
 ];
 
 function Tips() {
