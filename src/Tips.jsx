@@ -6,7 +6,7 @@ export const HOT_TRAINERS = [
   "W P Mullins", "G Elliott", "R Hannon", "G P Cromwell",
   "G & J Moore", "R A Fahey", "Ian Williams", "A W Carroll",
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
-  "D Skelton", "P F Nicholls"
+  "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas"
 ];
 
 function Tips() {
@@ -184,21 +184,35 @@ function Tips() {
             return (
               <div key={index} className="tip-card">
                 <div className="tip-header">
-                  <span className="tip-time">{race.time}</span>
-                  <span className="tip-place">{race.place}</span>
+                  <div style={{ flex: 1 }}>
+                    <div className="tip-header-top">
+                      <span className="tip-time">{race.time}</span>
+                      <span className="tip-place">{race.place}</span>
+                    </div>
+                    <div className="tip-race-info">{race.detail} • {race.horses?.length || 0} Runners</div>
+                    {topHorse && (
+                      <div className="tip-horse-header">
+                        {topHorse.silks && <img src={topHorse.silks} alt="silks" className="tip-silks-inline" />}
+                        <span className="tip-horse-identity-group">
+                          <span className="tip-horse-identity">{topHorse.number}. {topHorse.name}</span>
+                          <span className="tip-odds-inline">{displayOdds}</span>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <span className="tip-form-percentage"> ({formValue}%)</span>
                 </div>
                 <div className="tip-body">
                   {topHorse ? (
                     <>
-                      <div className="tip-horse-name">
-                        {topHorse.silks && <img src={topHorse.silks} alt="silks" className="tip-silks" />}
-                        {topHorse.name} <span className="tip-horse-odds">{displayOdds}</span>
-                      </div>
-                      <div className="tip-jockey">{topHorse.jockey} ({topHorse.trainer})</div>
-                      <div className="tip-info"><strong>Owner:</strong> {topHorse.owner}</div>
-                      <div className="tip-info"><strong>Breeding:</strong> {topHorse.breeding}</div>
-                      <div className="tip-info"><strong>Foaled:</strong> {topHorse.foaled}</div>
+                      <div className="tip-info"><strong>J:</strong> {topHorse.jockey}</div>
+                      <div className="tip-info"><strong>T:</strong> {topHorse.trainer}</div>
+                      <details className="tip-details">
+                        <summary className="tip-summary">Pedigree & Owner</summary>
+                        <div className="tip-info"><strong>Owner:</strong> {topHorse.owner}</div>
+                        <div className="tip-info"><strong>Breeding:</strong> {topHorse.breeding}</div>
+                        <div className="tip-info"><strong>Foaled:</strong> {topHorse.foaled}</div>
+                      </details>
                       {isHotTrainer && <div className="tip-hot-match">🔥 HOT TRAINER MATCH</div>}
                     </>
                   ) : (

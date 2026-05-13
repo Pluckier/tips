@@ -15,7 +15,7 @@
 }
 
 [data-theme='dark'] {
-  --bg-color: #0f172a;
+  --bg-color: #1c2740;
   --text-color: #f1f5f9;
   --container-bg: #1e293b;
   --header-bg: #0f172a;
@@ -80,32 +80,54 @@ body {
   border-radius: 16px 16px 0 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
-.tip-time { font-weight: 700; font-size: 1.1rem; }
+.tip-time { font-weight: 700; font-size: 1.1rem; margin-right: 10px; }
 .tip-place { font-size: 0.95rem; font-weight: 500; }
 .tip-form-percentage { font-size: 0.85rem; font-weight: bold; color: #48bb78; background: var(--bg-color); padding: 2px 8px; border-radius: 20px; }
 
+.tip-race-info {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
 .tip-body {
-  padding: 24px;
+  padding: 14px;
+  padding-top: 0px;
   flex-grow: 1;
 }
 
-.tip-horse-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--horse-name-color);
-  margin-bottom: 15px;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 10px;
+.tip-horse-header {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  gap: 12px;
 }
 
-.tip-silks {
+.tip-horse-identity-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tip-silks-inline {
   height: 32px;
   width: auto;
-  vertical-align: middle;
-  margin-right: 12px;
+}
+
+.tip-horse-identity {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.tip-odds-inline {
+  color: #48bb78;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 4px; /* Add some space between name and odds */
 }
 
 .tip-rating, .tip-jockey, .tip-info {
@@ -114,11 +136,24 @@ body {
   font-size: 1rem;
 }
 
-.tip-horse-odds {
-  color: #38a169;
-  font-size: 1.2rem;
-  margin-left: 8px;
+.tip-details {
+  margin-top: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
+}
+
+.tip-summary {
+  cursor: pointer;
+  font-size: 0.85rem;
   font-weight: 700;
+  color: var(--detail-text-color);
+  opacity: 0.8;
+  outline: none;
+}
+
+.tip-details .tip-info {
+  margin: 6px 0;
+  font-size: 0.9rem;
 }
 
 .tip-hot-match {
