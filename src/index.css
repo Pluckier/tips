@@ -176,6 +176,14 @@ body {
   gap: 15px;
 }
 
+.place-filters-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 20px 0;
+}
+
 .theme-toggle-btn {
   background: var(--container-bg);
   color: var(--text-color);

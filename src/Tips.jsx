@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import './Tips.css'
 
 export const HOT_TRAINERS = [
@@ -17,9 +17,23 @@ function Tips() {
   const [showHotTrainersOnly, setShowHotTrainersOnly] = useState(false);
   const [oddsFilter, setOddsFilter] = useState(0); // 0 means no filter, 1-20 is max odds
   const [minOddsFilter, setMinOddsFilter] = useState(0); // 0 means no filter, 5-20 is min odds
+  const [selectedPlaces, setSelectedPlaces] = useState(new Set());
 
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
+
+  const uniquePlaces = useMemo(() => {
+    return [...new Set(tips.map(race => race.place))].sort();
+  }, [tips]);
+
+  const togglePlace = (place) => {
+    setSelectedPlaces(prev => {
+      const next = new Set(prev);
+      if (next.has(place)) next.delete(place);
+      else next.add(place);
+      return next;
+    });
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -59,6 +73,11 @@ function Tips() {
   if (error) return <div className="tips-error">Error: {error}</div>;
 
   const filteredTips = tips.filter(race => {
+    // Race Place filter
+    if (selectedPlaces.size > 0 && !selectedPlaces.has(race.place)) {
+      return false;
+    }
+
     // Existing FORM filter
     const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
     const formValue = formMatch ? parseInt(formMatch[1], 10) : 0;
@@ -148,6 +167,21 @@ function Tips() {
           {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
         </button>
       </div>
+      
+      {uniquePlaces.length > 0 && (
+        <div className="place-filters-row">
+          {uniquePlaces.map(place => (
+            <button
+              key={place}
+              onClick={() => togglePlace(place)}
+              className={`filter-toggle-btn ${selectedPlaces.has(place) ? 'active' : ''}`}
+            >
+              {place}
+            </button>
+          ))}
+        </div>
+      )}
+
       <h2>Today's Racing Tips</h2>
       {filteredTips.length === 0 ? (
         <p>No tips available for today yet.</p>
