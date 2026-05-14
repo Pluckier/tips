@@ -98,7 +98,7 @@ function Tips() {
       // Existing FORM filter
       const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
       const formValue = formMatch ? parseInt(formMatch[1], 10) : 0;
-      if (formValue <= 50) return false;
+      if (formValue <=-1) return false;
 
       // Determine topHorse for this race to apply new filters
       const currentRaceTopHorse = getTopHorseForRace(race);
