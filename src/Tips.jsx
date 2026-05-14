@@ -9,6 +9,25 @@ export const HOT_TRAINERS = [
   "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland"
 ];
 
+const getTopHorseForRace = (race) => {
+  let topHorse = null;
+  let highestRating = -1;
+
+  race.horses?.forEach(horse => {
+    const lastOdd = horse.odds?.[horse.odds.length - 1];
+    if (lastOdd === "null" || lastOdd === "NR") return;
+
+    const ratings = (horse.past || []).map(p => parseFloat(p.name)).filter(r => !isNaN(r));
+    const peak = ratings.length > 0 ? Math.max(...ratings) : 0;
+
+    if (peak > highestRating) {
+      highestRating = peak;
+      topHorse = horse;
+    }
+  });
+  return topHorse;
+};
+
 function Tips() {
   const [tips, setTips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +88,46 @@ function Tips() {
     fetchTodayTips();
   }, []);
 
+  const filteredTips = useMemo(() => {
+    return tips.filter(race => {
+      // Race Place filter
+      if (selectedPlaces.size > 0 && !selectedPlaces.has(race.place)) {
+        return false;
+      }
+
+      // Existing FORM filter
+      const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
+      const formValue = formMatch ? parseInt(formMatch[1], 10) : 0;
+      if (formValue <= 50) return false;
+
+      // Determine topHorse for this race to apply new filters
+      const currentRaceTopHorse = getTopHorseForRace(race);
+
+      if (!currentRaceTopHorse) {
+        return false; // No valid horse found for this race
+      }
+
+      // Hot Trainers filter
+      const isHotTrainerMatch = HOT_TRAINERS.some(hot => 
+        currentRaceTopHorse.trainer?.toLowerCase().includes(hot.toLowerCase())
+      );
+      if (showHotTrainersOnly && !isHotTrainerMatch) {
+        return false;
+      }
+
+      // Odds filter
+      const currentOddsValue = parseFloat(currentRaceTopHorse.odds?.[currentRaceTopHorse.odds.length - 1]);
+      if (oddsFilter > 0 && (isNaN(currentOddsValue) || currentOddsValue > oddsFilter)) {
+        return false;
+      }
+      if (minOddsFilter > 0 && (isNaN(currentOddsValue) || currentOddsValue < minOddsFilter)) {
+        return false;
+      }
+
+      return true; // If all filters pass
+    });
+  }, [tips, selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter]);
+
   if (loading) {
     return (
       <div className="tips-container">
@@ -95,58 +154,6 @@ function Tips() {
     );
   }
   if (error) return <div className="tips-error">Error: {error}</div>;
-
-  const filteredTips = tips.filter(race => {
-    // Race Place filter
-    if (selectedPlaces.size > 0 && !selectedPlaces.has(race.place)) {
-      return false;
-    }
-
-    // Existing FORM filter
-    const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
-    const formValue = formMatch ? parseInt(formMatch[1], 10) : 0;
-    if (formValue <= -1) return false;
-
-    // Determine topHorse for this race to apply new filters
-    let currentRaceTopHorse = null;
-    let currentRaceHighestRating = -1;
-
-    race.horses?.forEach(horse => {
-      const lastOdd = horse.odds?.[horse.odds.length - 1];
-      if (lastOdd === "null" || lastOdd === "NR") return;
-
-      const ratings = (horse.past || []).map(p => parseFloat(p.name)).filter(r => !isNaN(r));
-      const peak = ratings.length > 0 ? Math.max(...ratings) : 0;
-      
-      if (peak > currentRaceHighestRating) {
-        currentRaceHighestRating = peak;
-        currentRaceTopHorse = horse;
-      }
-    });
-
-    if (!currentRaceTopHorse) {
-      return false; // No valid horse found for this race
-    }
-
-    // Hot Trainers filter
-    const isHotTrainerMatch = HOT_TRAINERS.some(hot => 
-      currentRaceTopHorse.trainer?.toLowerCase().includes(hot.toLowerCase())
-    );
-    if (showHotTrainersOnly && !isHotTrainerMatch) {
-      return false;
-    }
-
-    // Odds filter
-    const currentOddsValue = parseFloat(currentRaceTopHorse.odds?.[currentRaceTopHorse.odds.length - 1]);
-    if (oddsFilter > 0 && (isNaN(currentOddsValue) || currentOddsValue > oddsFilter)) {
-      return false;
-    }
-    if (minOddsFilter > 0 && (isNaN(currentOddsValue) || currentOddsValue < minOddsFilter)) {
-      return false;
-    }
-
-    return true; // If all filters pass
-  });
 
   return (
     <div className="tips-container">
@@ -211,26 +218,12 @@ function Tips() {
         <p>No tips available for today yet.</p>
       ) : (
         <div className="tips-grid">
-          {filteredTips.map((race, index) => {
+          {filteredTips.map((race) => {
             const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
-            const formValue = formMatch ? formMatch[1] : '0';
+            const formValue = formMatch ? parseInt(formMatch[1], 10) : 0;
 
             // Find the horse with the highest peak rating in its history
-            let topHorse = null;
-            let highestRating = -1;
-
-            race.horses?.forEach(horse => {
-              const lastOdd = horse.odds?.[horse.odds.length - 1];
-              if (lastOdd === "null" || lastOdd === "NR") return; // Skip non-runners
-
-              const ratings = (horse.past || []).map(p => parseFloat(p.name)).filter(r => !isNaN(r));
-              const peak = ratings.length > 0 ? Math.max(...ratings) : 0;
-              
-              if (peak > highestRating) {
-                highestRating = peak;
-                topHorse = horse;
-              }
-            });
+            const topHorse = getTopHorseForRace(race);
 
             const currentOdds = topHorse?.odds?.[topHorse.odds.length - 1];
             const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
@@ -239,8 +232,10 @@ function Tips() {
               topHorse.trainer?.toLowerCase().includes(hot.toLowerCase())
             );
 
+            const raceId = `${race.time}-${race.place.replace(/\s+/g, '')}`;
+
             return (
-              <div key={index} className="tip-card">
+              <div key={raceId} className="tip-card">
                 <div className="tip-header">
                   <div style={{ flex: 1 }}>
                     <div className="tip-header-top">
