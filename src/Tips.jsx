@@ -245,7 +245,16 @@ function Tips() {
                     <div className="tip-race-info">{race.detail} • {race.horses?.length || 0} Runners</div>
                     {topHorse && (
                       <div className="tip-horse-header">
-                        {topHorse.silks && <img src={topHorse.silks} alt="silks" className="tip-silks-inline" />}
+                        {topHorse.silks && (
+                          <a
+                            href={`https://pluckier.github.io/racing/#${race.time}${race.place.replace(/\s+/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={`View ${topHorse.name} in ${race.place} at ${race.time}`}
+                          >
+                            <img src={topHorse.silks} alt="silks" className="tip-silks-inline" />
+                          </a>
+                        )}
                         <span className="tip-horse-identity-group">
                           <span className="tip-horse-identity">{topHorse.number}. {topHorse.name}</span>
                           <span className="tip-odds-inline">{displayOdds}</span>
