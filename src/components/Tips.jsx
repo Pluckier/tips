@@ -148,6 +148,7 @@ function Tips() {
             <TipCard 
               key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
               race={race} 
+              selectedDate={selectedDate}
             />
           ))}
         </div>

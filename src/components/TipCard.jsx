@@ -1,7 +1,7 @@
 import React from 'react';
 import { HOT_TRAINERS, getNapAndNextBestForRace } from '../utils/raceUtils';
 
-const TipCard = ({ race }) => {
+const TipCard = ({ race, selectedDate }) => {
   const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
   const formValue = formMatch ? formMatch[1] : '0';
 
@@ -31,7 +31,7 @@ const TipCard = ({ race }) => {
             <div className="tip-horse-header">
               {nap.silks && (
                 <a
-                  href={`https://pluckier.github.io/racing/#${race.time}${race.place.replace(/\s+/g, '')}`} // Assuming NAP is the one linked
+                  href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`} // Assuming NAP is the one linked
                   target="_blank"
                   rel="noopener noreferrer"
                   title={`View ${nap.name} in ${race.place} at ${race.time}`}
