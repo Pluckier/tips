@@ -275,3 +275,20 @@ body {
   cursor: pointer;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
+
+.tip-silks-inline-small {
+  height: 15px;
+  width: auto;
+}
+
+.tip-odds-inline-small {
+  color: #48bb78;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.next-best-identity {
+  font-size: 0.85rem;
+  color: var(--detail-text-color);
+  margin-left: 10px;
+}

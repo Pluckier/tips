@@ -1,18 +1,21 @@
 import React from 'react';
-import { HOT_TRAINERS, getTopHorseForRace } from '../utils/raceUtils';
+import { HOT_TRAINERS, getNapAndNextBestForRace } from '../utils/raceUtils';
 
 const TipCard = ({ race }) => {
   const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
   const formValue = formMatch ? formMatch[1] : '0';
 
-  // Find the horse with the highest peak rating in its history
-  const topHorse = getTopHorseForRace(race);
+  // Get both the NAP and the Next Best horse for the race
+  const { nap, nextBest } = getNapAndNextBestForRace(race);
 
-  const currentOdds = topHorse?.odds?.[topHorse.odds.length - 1];
+  const currentOdds = nap?.odds?.[nap.odds.length - 1];
   const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
 
-  const isHotTrainer = topHorse && HOT_TRAINERS.some(hot => 
-    topHorse.trainer?.toLowerCase().includes(hot.toLowerCase())
+  const nbOdds = nextBest?.odds?.[nextBest.odds.length - 1];
+  const displayNbOdds = nbOdds === "null" ? "NR" : (nbOdds || "N/A");
+
+  const isHotTrainer = nap && HOT_TRAINERS.some(hot =>
+    nap.trainer?.toLowerCase().includes(hot.toLowerCase())
   );
 
   return (
@@ -24,20 +27,20 @@ const TipCard = ({ race }) => {
             <span className="tip-place">{race.place}</span>
           </div>
           <div className="tip-race-info">{race.detail} • {race.horses?.length || 0} Runners</div>
-          {topHorse && (
+          {nap && (
             <div className="tip-horse-header">
-              {topHorse.silks && (
+              {nap.silks && (
                 <a
-                  href={`https://pluckier.github.io/racing/#${race.time}${race.place.replace(/\s+/g, '')}`}
+                  href={`https://pluckier.github.io/racing/#${race.time}${race.place.replace(/\s+/g, '')}`} // Assuming NAP is the one linked
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={`View ${topHorse.name} in ${race.place} at ${race.time}`}
+                  title={`View ${nap.name} in ${race.place} at ${race.time}`}
                 >
-                  <img src={topHorse.silks} alt="silks" className="tip-silks-inline" />
+                  <img src={nap.silks} alt="silks" className="tip-silks-inline" />
                 </a>
               )}
               <span className="tip-horse-identity-group">
-                <span className="tip-horse-identity">{topHorse.number}. {topHorse.name}</span>
+                <span className="tip-horse-identity">{nap.number}. {nap.name}</span>
                 <span className="tip-odds-inline">{displayOdds}</span>
               </span>
             </div>
@@ -46,17 +49,28 @@ const TipCard = ({ race }) => {
         <span className="tip-form-percentage"> ({formValue}%)</span>
       </div>
       <div className="tip-body">
-        {topHorse ? (
+        {nap ? (
           <>
-            <div className="tip-info"><strong>J:</strong> {topHorse.jockey}</div>
-            <div className="tip-info"><strong>T:</strong> {topHorse.trainer}</div>
+            <div className="tip-info"><strong>J:</strong> {nap.jockey}</div>
+            <div className="tip-info"><strong>T:</strong> {nap.trainer}</div>
             <details className="tip-details">
               <summary className="tip-summary">Pedigree & Owner</summary>
-              <div className="tip-info"><strong>Owner:</strong> {topHorse.owner}</div>
-              <div className="tip-info"><strong>Breeding:</strong> {topHorse.breeding}</div>
-              <div className="tip-info"><strong>Foaled:</strong> {topHorse.foaled}</div>
+              <div className="tip-info"><strong>Owner:</strong> {nap.owner}</div>
+              <div className="tip-info"><strong>Breeding:</strong> {nap.breeding}</div>
+              <div className="tip-info"><strong>Foaled:</strong> {nap.foaled}</div>
             </details>
             {isHotTrainer && <div className="tip-hot-match">🔥 HOT TRAINER MATCH</div>}
+
+            {nextBest && (
+              <div className="tip-next-best">
+                <span className="next-best-label">NB:</span>
+                {nextBest.silks && <img src={nextBest.silks} alt="silks" className="tip-silks-inline-small" />}
+                <span className="next-best-identity">
+                  {nextBest.number}. {nextBest.name} 
+                  <span className="tip-odds-inline-small"> {displayNbOdds}</span>
+                </span>
+              </div>
+            )}
           </>
         ) : (
           <div className="tip-detail">{race.detail}</div>

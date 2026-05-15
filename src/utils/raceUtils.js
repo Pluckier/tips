@@ -7,6 +7,13 @@ export const HOT_TRAINERS = [
 ];
 
 /**
+ * Helper to calculate the highest peak rating from a horse's past performances.
+ */
+const calculatePeakRating = (horse) => {
+  const ratings = (horse.past || []).map(p => parseFloat(p.name)).filter(r => !isNaN(r));
+  return ratings.length > 0 ? Math.max(...ratings) : 0;
+};
+/**
  * Find the horse with the highest peak rating in its history
  */
 export const getTopHorseForRace = (race) => {
@@ -38,4 +45,39 @@ export const getTopHorseForRace = (race) => {
     }
   });
   return topHorse;
+};
+
+/**
+ * Determines the NAP (best horse based on current strategy) and the Next Best horse for a given race.
+ * The Next Best is the highest-rated horse among the remaining valid runners, excluding the NAP.
+ * @param {object} race The race object.
+ * @returns {{nap: object|null, nextBest: object|null}} An object containing the NAP and Next Best horses.
+ */
+export const getNapAndNextBestForRace = (race) => {
+  const nap = getTopHorseForRace(race); // Use existing logic for NAP
+
+  const allValidRunners = (race.horses || []).filter(horse => {
+    const lastOdd = horse.odds?.[horse.odds.length - 1];
+    return lastOdd !== "null" && lastOdd !== "NR";
+  });
+
+  // If no NAP or less than 2 valid runners, there cannot be a next best
+  if (!nap || allValidRunners.length < 2) {
+    return { nap, nextBest: null };
+  }
+
+  // Filter out the NAP from the list of all valid runners
+  const otherRunners = allValidRunners.filter(horse => horse !== nap);
+
+  // Calculate peak ratings for the remaining runners and sort them to find the next best
+  const nextBestCandidate = otherRunners
+    .map(horse => ({
+      horse,
+      peakRating: calculatePeakRating(horse)
+    }))
+    .sort((a, b) => b.peakRating - a.peakRating);
+
+  const nextBest = nextBestCandidate.length > 0 ? nextBestCandidate[0].horse : null;
+
+  return { nap, nextBest };
 };
