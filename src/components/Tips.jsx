@@ -20,7 +20,10 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
 function Tips() {
   const [selectedDate, setSelectedDate] = useState(() => {
     const now = new Date();
-    return now.toISOString().split('T')[0];
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   });
 
   const { tips, loading, error } = useFetchTips(selectedDate);
@@ -101,7 +104,13 @@ function Tips() {
             <h3>No Data Available</h3>
             <p>We couldn't retrieve any racing tips for this date. It's possible there are no meetings scheduled or the data isn't available yet.</p>
             <button 
-              onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])} 
+              onClick={() => {
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+                setSelectedDate(`${y}-${m}-${d}`);
+              }} 
               className="filter-toggle-btn active"
               style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
             >
