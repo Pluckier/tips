@@ -14,13 +14,15 @@ const TipCardSkeleton = () => (
   </div>
 );
 
-const TipsSkeleton = () => {
+const TipsSkeleton = ({ selectedDate }) => {
+  const displayDate = selectedDate ? selectedDate.split('-').reverse().join('/') : '...';
+
   return (
     <div className="tips-container">
       <div className="tips-header-actions" style={{ visibility: 'hidden' }}>
         <button className="theme-toggle-btn">🌙 Dark Mode</button>
       </div>
-      <h2>Today's Racing Tips</h2>
+      <h2>Racing Tips: {displayDate} 📅</h2>
       <div className="tips-grid">
         {[...Array(6)].map((_, i) => (
           <TipCardSkeleton key={i} />

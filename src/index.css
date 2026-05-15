@@ -292,3 +292,73 @@ body {
   color: var(--detail-text-color);
   margin-left: 10px;
 }
+
+/* --- Date Picker Theme Overrides --- */
+.react-datepicker {
+  background-color: var(--container-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  font-family: inherit !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.react-datepicker__header {
+  background-color: var(--header-bg) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.react-datepicker__current-month, 
+.react-datepicker__day-name {
+  color: var(--header-text) !important;
+}
+
+.react-datepicker__day {
+  color: var(--text-color) !important;
+  border-radius: 50% !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--bg-color) !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: #48bb78 !important; /* Match your green odds color */
+  color: white !important;
+  font-weight: bold;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 2px #48bb78;
+}
+
+/* --- Error Case Styling --- */
+.tips-error-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.tips-error-card {
+  background: var(--container-bg);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px var(--card-shadow);
+  border: 1px solid var(--border-color);
+  max-width: 500px;
+  width: 100%;
+}
+
+.tips-error-card h3 {
+  margin-top: 0;
+  color: var(--title-color);
+  font-size: 1.8rem;
+}
+
+.tips-error-card p {
+  color: var(--detail-text-color);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}

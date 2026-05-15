@@ -9,16 +9,16 @@ export const useFetchTips = (selectedDate) => {
     const fetchTodayTips = async () => {
       setLoading(true);
       setError(null);
-      setTips([]);
-      console.log(`[useFetchTips Hook] Initiating fetch for: ${selectedDate}`);
+      setTips([]); // Clear old tips so the skeleton/loading state is visible
+      console.log(`[useFetchTips] Initiating fetch for date: ${selectedDate}`);
       try {
         // Parse YYYY-MM-DD to DD-MM-YYYY for the API
         const [year, month, day] = selectedDate.split('-');
         const dateStr = `${day}-${month}-${year}`;
 
         const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
-        console.log(`[useFetchTips Hook] Requesting: ${url}`);
         
+        console.log(`[useFetchTips] Fetching URL: ${url}`);
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Could not fetch tips for ${dateStr}`);
@@ -26,10 +26,10 @@ export const useFetchTips = (selectedDate) => {
 
         const data = await response.json();
         setTips(data);
-        console.log(`[useFetchTips Hook] Data received: ${data.length} entries.`);
+        console.log(`[useFetchTips] Successfully loaded ${data.length} races.`);
       } catch (err) {
         setError(err.message);
-        console.error(`[useFetchTips Hook] Error: ${err.message}`);
+        console.error(`[useFetchTips] Fetch error: ${err.message}`);
       } finally {
         setLoading(false);
       }

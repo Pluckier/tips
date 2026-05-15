@@ -62,14 +62,17 @@ const TipCard = ({ race }) => {
             {isHotTrainer && <div className="tip-hot-match">🔥 HOT TRAINER MATCH</div>}
 
             {nextBest && (
-              <div className="tip-next-best">
-                <span className="next-best-label">NB:</span>
-                {nextBest.silks && <img src={nextBest.silks} alt="silks" className="tip-silks-inline-small" />}
-                <span className="next-best-identity">
-                  {nextBest.number}. {nextBest.name} 
-                  <span className="tip-odds-inline-small"> {displayNbOdds}</span>
-                </span>
-              </div>
+              <>
+                <div className="tip-details" style={{ marginTop: '12px' }}></div>
+                <div className="tip-next-best">
+                  <span className="next-best-label">NB:</span>
+                  {nextBest.silks && <img src={nextBest.silks} alt="silks" className="tip-silks-inline-small" />}
+                  <span className="next-best-identity">
+                    {nextBest.number}. {nextBest.name} 
+                    <span className="tip-odds-inline-small"> {displayNbOdds}</span>
+                  </span>
+                </div>
+              </>
             )}
           </>
         ) : (
