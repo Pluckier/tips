@@ -1,18 +1,20 @@
 import React from 'react';
-import { HOT_TRAINERS, getNapAndNextBestForRace } from '../utils/raceUtils';
+import { HOT_TRAINERS, getNapAndNextBestForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate }) => {
+const TipCard = ({ race, selectedDate, sortByAvg }) => {
   const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
   const formValue = formMatch ? formMatch[1] : '0';
 
   // Get both the NAP and the Next Best horse for the race
-  const { nap, nextBest } = getNapAndNextBestForRace(race);
+  const { nap, nextBest } = getNapAndNextBestForRace(race, sortByAvg);
 
   const currentOdds = nap?.odds?.[nap.odds.length - 1];
   const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
 
   const nbOdds = nextBest?.odds?.[nextBest.odds.length - 1];
   const displayNbOdds = nbOdds === "null" ? "NR" : (nbOdds || "N/A");
+
+  const napScore = nap ? (sortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
 
   const isHotTrainer = nap && HOT_TRAINERS.some(hot =>
     nap.trainer?.toLowerCase().includes(hot.toLowerCase())
@@ -40,7 +42,9 @@ const TipCard = ({ race, selectedDate }) => {
                 </a>
               )}
               <span className="tip-horse-identity-group">
-                <span className="tip-horse-identity">{nap.number}. {nap.name}</span>
+                <span className="tip-horse-identity">
+                  {nap.number}. {nap.name}
+                </span>
                 <span className="tip-odds-inline">{displayOdds}</span>
               </span>
             </div>

@@ -11,7 +11,9 @@ const FilterControls = ({
   toggleTheme,
   uniquePlaces,
   selectedPlaces,
-  togglePlace
+  togglePlace,
+  sortByAvg,
+  setSortByAvg
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
@@ -26,6 +28,22 @@ const FilterControls = ({
         >
           🔥 Hot Trainers
         </button>
+        <button
+          onClick={() => setSortByAvg(prev => !prev)}
+          className={`filter-toggle-btn ${sortByAvg ? 'active' : ''}`}
+          title="Toggle between Trainer/Peak strategy and Average L3 strategy"
+        >
+          📊 {sortByAvg ? 'Sort: Avg L3' : 'Sort: Peak'}
+        </button>
+        <button 
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+        >
+          {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
+      </div>
+
+      <div className="tips-header-actions" style={{ justifyContent: 'center', marginTop: '10px' }}>
         <div className="odds-filter-group">
           <span className="odds-filter-label">Min Odds: {minOddsFilter === 0 ? 'Show All' : `>${minOddsFilter}/1`}</span>
           <input
@@ -52,12 +70,6 @@ const FilterControls = ({
             title={oddsFilter === 0 ? 'Show all odds' : `Show odds up to ${oddsFilter}/1`}
           />
         </div>
-        <button 
-          onClick={toggleTheme}
-          className="theme-toggle-btn"
-        >
-          {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
-        </button>
       </div>
       
       {uniquePlaces.length > 0 && (

@@ -5,6 +5,7 @@ import TipsSkeleton from './TipsSkeleton';
 import { useFilteredTips } from '../hooks/useFilteredTips';
 import FilterControls from './FilterControls';
 import { useTheme } from '../hooks/useTheme';
+import { getTopHorseForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
 
 // Import React DatePicker
 import DatePicker from "react-datepicker";
@@ -32,6 +33,7 @@ function Tips() {
   const [oddsFilter, setOddsFilter] = useState(0); // 0 means no filter, 1-20 is max odds
   const [minOddsFilter, setMinOddsFilter] = useState(0); // 0 means no filter, 5-20 is min odds
   const [selectedPlaces, setSelectedPlaces] = useState(new Set());
+  const [sortByAvg, setSortByAvg] = useState(false);
 
   // Reset filters when the date changes to ensure we don't hide data from the new date
   React.useEffect(() => {
@@ -68,8 +70,14 @@ function Tips() {
     selectedPlaces,
     showHotTrainersOnly,
     oddsFilter,
-    minOddsFilter
+    minOddsFilter,
+    sortByAvg
   });
+
+  // Order the filtered tips chronologically by race time
+  const sortedTips = useMemo(() => {
+    return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
+  }, [filteredTips]);
 
   if (loading) return <TipsSkeleton selectedDate={selectedDate} />;
 
@@ -88,6 +96,8 @@ function Tips() {
           uniquePlaces={uniquePlaces}
           selectedPlaces={selectedPlaces}
           togglePlace={togglePlace}
+          sortByAvg={sortByAvg}
+          setSortByAvg={setSortByAvg}
         />
         <div className="tips-header-section">
           <DatePicker
@@ -136,6 +146,8 @@ function Tips() {
         uniquePlaces={uniquePlaces}
         selectedPlaces={selectedPlaces}
         togglePlace={togglePlace}
+        sortByAvg={sortByAvg}
+        setSortByAvg={setSortByAvg}
       />
 
       <div className="tips-header-section">
@@ -153,11 +165,12 @@ function Tips() {
         <p>No tips available for today yet.</p>
       ) : (
         <div className="tips-grid">
-          {filteredTips.map((race) => (
+          {sortedTips.map((race) => (
             <TipCard 
               key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
               race={race} 
               selectedDate={selectedDate}
+              sortByAvg={sortByAvg}
             />
           ))}
         </div>

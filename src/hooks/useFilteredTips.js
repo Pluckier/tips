@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { HOT_TRAINERS, getTopHorseForRace } from '../utils/raceUtils';
 
-export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter }) => {
+export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg }) => {
   return useMemo(() => {
     return tips.filter(race => {
       // Race Place filter
@@ -15,7 +15,7 @@ export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, odd
       if (formValue <= -1) return false;
 
       // Determine topHorse for this race to apply new filters
-      const currentRaceTopHorse = getTopHorseForRace(race);
+      const currentRaceTopHorse = getTopHorseForRace(race, sortByAvg);
 
       if (!currentRaceTopHorse) {
         return false; // No valid horse found for this race
@@ -40,5 +40,5 @@ export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, odd
 
       return true; // If all filters pass
     });
-  }, [tips, selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter]);
+  }, [tips, selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg]);
 };
