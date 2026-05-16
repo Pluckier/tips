@@ -1,4 +1,5 @@
 import React from 'react';
+import TrackWorker from './TrackWorker';
 
 const FilterControls = ({
   showHotTrainersOnly,
@@ -37,6 +38,10 @@ const FilterControls = ({
         >
           📊 {sortByAvg ? 'Recent' : 'Highest'}
         </button>
+        <TrackWorker />
+
+        //put the chat here. 💬
+
         <button
           onClick={() => setShowUpcomingOnly(prev => !prev)}
           className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}
