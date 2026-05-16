@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // A custom header to trigger the picker, keeping your 📅 style
 const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
   <h2 onClick={onClick} ref={ref} style={{ cursor: 'pointer' }} title="Click to change date">
-    Racing Tips: {value} 📅
+    Racing Info: {value} 📅
   </h2>
 ));
 
