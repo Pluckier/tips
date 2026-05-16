@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import TipCard from './TipCard';
 import { useFetchTips } from '../hooks/useFetchTips';
 import TipsSkeleton from './TipsSkeleton';
@@ -34,6 +34,15 @@ function Tips() {
   const [minOddsFilter, setMinOddsFilter] = useState(0); // 0 means no filter, 5-20 is min odds
   const [selectedPlaces, setSelectedPlaces] = useState(new Set());
   const [sortByAvg, setSortByAvg] = useState(false);
+  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Heartbeat to trigger re-renders for the "Upcoming" filter
+  useEffect(() => {
+    if (!showUpcomingOnly) return;
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, [showUpcomingOnly]);
 
   // Reset filters when the date changes to ensure we don't hide data from the new date
   React.useEffect(() => {
@@ -71,7 +80,10 @@ function Tips() {
     showHotTrainersOnly,
     oddsFilter,
     minOddsFilter,
-    sortByAvg
+    sortByAvg,
+    showUpcomingOnly,
+    selectedDate,
+    currentTime
   });
 
   // Order the filtered tips chronologically by race time
@@ -98,6 +110,8 @@ function Tips() {
           togglePlace={togglePlace}
           sortByAvg={sortByAvg}
           setSortByAvg={setSortByAvg}
+          showUpcomingOnly={showUpcomingOnly}
+          setShowUpcomingOnly={setShowUpcomingOnly}
         />
         <div className="tips-header-section">
           <DatePicker
@@ -148,6 +162,8 @@ function Tips() {
         togglePlace={togglePlace}
         sortByAvg={sortByAvg}
         setSortByAvg={setSortByAvg}
+        showUpcomingOnly={showUpcomingOnly}
+        setShowUpcomingOnly={setShowUpcomingOnly}
       />
 
       <div className="tips-header-section">

@@ -1,12 +1,26 @@
 import { useMemo } from 'react';
 import { HOT_TRAINERS, getTopHorseForRace } from '../utils/raceUtils';
 
-export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg }) => {
+export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg, showUpcomingOnly, selectedDate, currentTime }) => {
   return useMemo(() => {
     return tips.filter(race => {
       // Race Place filter
       if (selectedPlaces.size > 0 && !selectedPlaces.has(race.place)) {
         return false;
+      }
+
+      // Upcoming filter
+      if (showUpcomingOnly) {
+        const y = currentTime.getFullYear();
+        const m = String(currentTime.getMonth() + 1).padStart(2, '0');
+        const d = String(currentTime.getDate()).padStart(2, '0');
+        const todayStr = `${y}-${m}-${d}`;
+        
+        if (selectedDate === todayStr) {
+          const [h, min] = race.time.split(':').map(Number);
+          const raceTime = new Date(y, currentTime.getMonth(), currentTime.getDate(), h, min);
+          if (raceTime < currentTime) return false;
+        }
       }
 
       // Existing FORM filter
@@ -41,5 +55,5 @@ export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, odd
 
       return true; // If all filters pass
     });
-  }, [tips, selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg]);
+  }, [tips, selectedPlaces, showHotTrainersOnly, oddsFilter, minOddsFilter, sortByAvg, showUpcomingOnly, selectedDate, currentTime]);
 };

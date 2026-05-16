@@ -13,7 +13,9 @@ const FilterControls = ({
   selectedPlaces,
   togglePlace,
   sortByAvg,
-  setSortByAvg
+  setSortByAvg,
+  showUpcomingOnly,
+  setShowUpcomingOnly
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
@@ -34,6 +36,13 @@ const FilterControls = ({
           title="Toggle between Trainer/Peak strategy and Average L3 strategy"
         >
           📊 {sortByAvg ? 'Recent' : 'Highest'}
+        </button>
+        <button
+          onClick={() => setShowUpcomingOnly(prev => !prev)}
+          className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}
+          title="Show only races that haven't run yet"
+        >
+          🕒 Upcoming
         </button>
         <button 
           onClick={toggleTheme}

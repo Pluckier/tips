@@ -44,7 +44,10 @@ const TipCard = ({ race, selectedDate, sortByAvg }) => {
               )}
               <span className="tip-horse-identity-group">
                 <span className="tip-horse-identity">
-                  {nap.number}. {nap.name}
+                  {nap.number}. {nap.name} 
+                  <span style={{ fontSize: '0.9rem', opacity: 0.7, marginLeft: '8px' }}>
+                    ({napScore.toFixed(0)})
+                  </span>
                 </span>
                 <span className="tip-odds-inline">{displayOdds}</span>
               </span>

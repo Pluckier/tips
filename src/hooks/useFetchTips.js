@@ -6,6 +6,8 @@ export const useFetchTips = (selectedDate) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchTodayTips = async () => {
       setLoading(true);
       setError(null);
@@ -19,7 +21,7 @@ export const useFetchTips = (selectedDate) => {
         const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
         console.log(`[useFetchTips Hook] Requesting: ${url}`);
         
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: abortController.signal });
         if (!response.ok) {
           throw new Error(`Could not fetch tips for ${dateStr}`);
         }
@@ -28,14 +30,19 @@ export const useFetchTips = (selectedDate) => {
         setTips(data);
         console.log(`[useFetchTips Hook] Data received: ${data.length} entries.`);
       } catch (err) {
+        if (err.name === 'AbortError') return; // Ignore expected cancellation errors
         setError(err.message);
         console.error(`[useFetchTips Hook] Error: ${err.message}`);
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTodayTips();
+
+    return () => abortController.abort(); // Cancel the request if the date changes or component unmounts
   }, [selectedDate]);
 
   return { tips, loading, error };
