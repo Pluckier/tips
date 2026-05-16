@@ -22,9 +22,10 @@ export const useFilteredTips = (tips, { selectedPlaces, showHotTrainersOnly, odd
       }
 
       // Hot Trainers filter
-      const isHotTrainerMatch = HOT_TRAINERS.some(hot => 
-        currentRaceTopHorse.trainer?.toLowerCase().includes(hot.toLowerCase())
-      );
+      const isHotTrainerMatch = 
+        HOT_TRAINERS.some(hot => currentRaceTopHorse.trainer?.includes(hot)) || 
+        currentRaceTopHorse.owner?.startsWith("STAR");
+
       if (showHotTrainersOnly && !isHotTrainerMatch) {
         return false;
       }

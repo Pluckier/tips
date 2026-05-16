@@ -16,8 +16,9 @@ const TipCard = ({ race, selectedDate, sortByAvg }) => {
 
   const napScore = nap ? (sortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
 
-  const isHotTrainer = nap && HOT_TRAINERS.some(hot =>
-    nap.trainer?.toLowerCase().includes(hot.toLowerCase())
+  const isHotTrainer = nap && (
+    HOT_TRAINERS.some(hot => nap.trainer?.includes(hot)) || 
+    nap.owner?.startsWith("STAR")
   );
 
   return (

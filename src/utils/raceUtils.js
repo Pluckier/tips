@@ -3,7 +3,8 @@ export const HOT_TRAINERS = [
   "W P Mullins", "G Elliott", "R Hannon", "G P Cromwell",
   "G & J Moore", "R A Fahey", "Ian Williams", "A W Carroll",
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
-  "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland"
+  "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland",
+  "J & T Gosden", "C Appleby", "R M Beckett"
 ];
 
 /**
@@ -39,7 +40,8 @@ export const getTopHorseForRace = (race, sortByAvg = false) => {
   let pool = runners;
   if (!sortByAvg) {
     const hotTrainerRunners = runners.filter(horse => 
-      HOT_TRAINERS.some(hot => horse.trainer?.toLowerCase().includes(hot.toLowerCase()))
+      HOT_TRAINERS.some(hot => horse.trainer?.includes(hot)) ||
+      horse.owner?.startsWith("STAR")
     );
     if (hotTrainerRunners.length > 0) pool = hotTrainerRunners;
   }
