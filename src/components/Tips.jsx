@@ -75,6 +75,14 @@ function Tips() {
     });
   };
 
+  // Calculate the time for the "Upcoming" filter (Current time minus 5 minutes)
+  // This provides a 5-minute grace period before a race is filtered away
+  const filterReferenceTime = useMemo(() => {
+    const time = new Date(currentTime);
+    time.setMinutes(time.getMinutes() - 5);
+    return time;
+  }, [currentTime]);
+
   const filteredTips = useFilteredTips(tips, {
     selectedPlaces,
     showHotTrainersOnly,
@@ -83,7 +91,7 @@ function Tips() {
     sortByAvg,
     showUpcomingOnly,
     selectedDate,
-    currentTime
+    currentTime: filterReferenceTime
   });
 
   // Order the filtered tips chronologically by race time
