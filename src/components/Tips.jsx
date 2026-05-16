@@ -79,7 +79,7 @@ function Tips() {
   // This provides a 5-minute grace period before a race is filtered away
   const filterReferenceTime = useMemo(() => {
     const time = new Date(currentTime);
-    time.setMinutes(time.getMinutes() - 5);
+    time.setMinutes(time.getMinutes() - 10);
     return time;
   }, [currentTime]);
 
