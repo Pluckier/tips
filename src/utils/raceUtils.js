@@ -4,7 +4,7 @@ export const HOT_TRAINERS = [
   "G & J Moore", "R A Fahey", "Ian Williams", "A W Carroll",
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
   "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland",
-  "J & T Gosden", "C Appleby", "R M Beckett"
+  "J & T Gosden", "C Appleby", "R M Beckett", "C Johnston", "H De Bromhead"
 ];
 
 /**
