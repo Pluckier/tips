@@ -33,7 +33,7 @@ const FilterControls = ({
           className={`filter-toggle-btn ${sortByAvg ? 'active' : ''}`}
           title="Toggle between Trainer/Peak strategy and Average L3 strategy"
         >
-          📊 {sortByAvg ? 'Sort: Avg L3' : 'Sort: Peak'}
+          📊 {sortByAvg ? 'Recent' : 'Highest'}
         </button>
         <button 
           onClick={toggleTheme}
