@@ -44,6 +44,7 @@ export const useFetchTips = (selectedDate) => {
 
         const data = await response.json();
         setTips(data);
+        setLastRefreshTime(Date.now());
         console.log(`[useFetchTips Hook] Data received: ${data.length} entries.`);
       } catch (err) {
         if (err.name === 'AbortError') return; // Ignore expected cancellation errors

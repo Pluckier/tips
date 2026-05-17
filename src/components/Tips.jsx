@@ -45,6 +45,17 @@ function Tips() {
     return () => clearInterval(timer);
   }, []);
 
+  // Auto-refresh logic: trigger a refresh every 15 minutes
+  useEffect(() => {
+    const AUTO_REFRESH_MS = 15 * 60 * 1000;
+    if (lastRefreshTime > 0) {
+      const timeSinceUpdate = currentTime.getTime() - lastRefreshTime;
+      if (timeSinceUpdate >= AUTO_REFRESH_MS) {
+        refresh();
+      }
+    }
+  }, [currentTime, lastRefreshTime, refresh]);
+
   // Reset filters when the date changes to ensure we don't hide data from the new date
   React.useEffect(() => {
     setSelectedPlaces(new Set());
