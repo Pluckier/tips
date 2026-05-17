@@ -35,7 +35,7 @@ function Tips() {
   const [minOddsFilter, setMinOddsFilter] = useState(0); // 0 means no filter, 5-20 is min odds
   const [selectedPlaces, setSelectedPlaces] = useState(new Set());
   const [sortByAvg, setSortByAvg] = useState(false);
-  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
+  const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
 
