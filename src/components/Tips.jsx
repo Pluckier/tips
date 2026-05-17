@@ -135,9 +135,6 @@ function Tips() {
           setShowUpcomingOnly={setShowUpcomingOnly}
           isChatVisible={isChatVisible}
           setIsChatVisible={setIsChatVisible}
-          onRefresh={refresh}
-          lastRefreshTime={lastRefreshTime}
-          currentTime={currentTime}
         />
         <div className="tips-header-section">
           <DatePicker
@@ -192,9 +189,6 @@ function Tips() {
         setShowUpcomingOnly={setShowUpcomingOnly}
         isChatVisible={isChatVisible}
         setIsChatVisible={setIsChatVisible}
-        onRefresh={refresh}
-        lastRefreshTime={lastRefreshTime}
-        currentTime={currentTime}
       />
 
       {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}

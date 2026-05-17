@@ -18,18 +18,10 @@ const FilterControls = ({
   showUpcomingOnly,
   setShowUpcomingOnly,
   isChatVisible,
-  setIsChatVisible,
-  onRefresh,
-  lastRefreshTime,
-  currentTime
+  setIsChatVisible
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
-
-  const COOLDOWN_MS = 10 * 60 * 1000;
-  const timeSinceRefresh = currentTime.getTime() - lastRefreshTime;
-  const isRefreshDisabled = lastRefreshTime > 0 && timeSinceRefresh < COOLDOWN_MS;
-  const minutesRemaining = Math.ceil((COOLDOWN_MS - timeSinceRefresh) / 60000);
 
   return (
     <>
@@ -58,10 +50,10 @@ const FilterControls = ({
           💬
         </button>
         <button
-          onClick={onRefresh}
-          className={`filter-toggle-btn ${isRefreshDisabled ? 'disabled' : ''}`}
-          disabled={isRefreshDisabled}
-          title={isRefreshDisabled ? `Refresh available in ${minutesRemaining}m` : "Refresh racing data"}
+          className="filter-toggle-btn disabled"
+          disabled
+          style={{ cursor: 'default' }}
+          title="Data updates automatically every 15 mins"
         >
           ↻
         </button>
