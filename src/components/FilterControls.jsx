@@ -16,10 +16,20 @@ const FilterControls = ({
   sortByAvg,
   setSortByAvg,
   showUpcomingOnly,
-  setShowUpcomingOnly
+  setShowUpcomingOnly,
+  isChatVisible,
+  setIsChatVisible,
+  onRefresh,
+  lastRefreshTime,
+  currentTime
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
+
+  const COOLDOWN_MS = 10 * 60 * 1000;
+  const timeSinceRefresh = currentTime.getTime() - lastRefreshTime;
+  const isRefreshDisabled = lastRefreshTime > 0 && timeSinceRefresh < COOLDOWN_MS;
+  const minutesRemaining = Math.ceil((COOLDOWN_MS - timeSinceRefresh) / 60000);
 
   return (
     <>
@@ -40,8 +50,21 @@ const FilterControls = ({
         </button>
         <TrackWorker />
 
-        //put the chat here. 💬
-
+        <button
+          onClick={() => setIsChatVisible(prev => !prev)}
+          className={`filter-toggle-btn ${isChatVisible ? 'active' : ''}`}
+          title="Toggle live chat for these races"
+        >
+          💬
+        </button>
+        <button
+          onClick={onRefresh}
+          className={`filter-toggle-btn ${isRefreshDisabled ? 'disabled' : ''}`}
+          disabled={isRefreshDisabled}
+          title={isRefreshDisabled ? `Refresh available in ${minutesRemaining}m` : "Refresh racing data"}
+        >
+          ↻
+        </button>
         <button
           onClick={() => setShowUpcomingOnly(prev => !prev)}
           className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}

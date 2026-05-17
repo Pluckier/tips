@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import TipCard from './TipCard';
+import Chatter from './Chatter';
 import { useFetchTips } from '../hooks/useFetchTips';
 import TipsSkeleton from './TipsSkeleton';
 import { useFilteredTips } from '../hooks/useFilteredTips';
@@ -27,7 +28,7 @@ function Tips() {
     return `${y}-${m}-${d}`;
   });
 
-  const { tips, loading, error } = useFetchTips(selectedDate);
+  const { tips, loading, error, refresh, lastRefreshTime } = useFetchTips(selectedDate);
   const { theme, toggleTheme } = useTheme();
   const [showHotTrainersOnly, setShowHotTrainersOnly] = useState(false);
   const [oddsFilter, setOddsFilter] = useState(0); // 0 means no filter, 1-20 is max odds
@@ -36,13 +37,13 @@ function Tips() {
   const [sortByAvg, setSortByAvg] = useState(false);
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
-    if (!showUpcomingOnly) return;
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
-  }, [showUpcomingOnly]);
+  }, []);
 
   // Reset filters when the date changes to ensure we don't hide data from the new date
   React.useEffect(() => {
@@ -99,7 +100,8 @@ function Tips() {
     return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
   }, [filteredTips]);
 
-  if (loading) return <TipsSkeleton selectedDate={selectedDate} />;
+  // Only show the full skeleton if we are loading AND have no data to show.
+  if (loading && tips.length === 0) return <TipsSkeleton selectedDate={selectedDate} />;
 
   if (error) {
     return (
@@ -120,6 +122,11 @@ function Tips() {
           setSortByAvg={setSortByAvg}
           showUpcomingOnly={showUpcomingOnly}
           setShowUpcomingOnly={setShowUpcomingOnly}
+          isChatVisible={isChatVisible}
+          setIsChatVisible={setIsChatVisible}
+          onRefresh={refresh}
+          lastRefreshTime={lastRefreshTime}
+          currentTime={currentTime}
         />
         <div className="tips-header-section">
           <DatePicker
@@ -172,7 +179,14 @@ function Tips() {
         setSortByAvg={setSortByAvg}
         showUpcomingOnly={showUpcomingOnly}
         setShowUpcomingOnly={setShowUpcomingOnly}
+        isChatVisible={isChatVisible}
+        setIsChatVisible={setIsChatVisible}
+        onRefresh={refresh}
+        lastRefreshTime={lastRefreshTime}
+        currentTime={currentTime}
       />
+
+      {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
       <div className="tips-header-section">
         <DatePicker
