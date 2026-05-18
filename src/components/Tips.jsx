@@ -107,6 +107,13 @@ function Tips() {
     currentTime: filterReferenceTime
   });
 
+  useEffect(() => {
+    // If the "Upcoming" filter is hiding all results for a day that has data, turn it off automatically.
+    if (!loading && tips.length > 0 && showUpcomingOnly && filteredTips.length === 0) {
+      setShowUpcomingOnly(false);
+    }
+  }, [loading, tips.length, showUpcomingOnly, filteredTips.length]);
+
   // Order the filtered tips chronologically by race time
   const sortedTips = useMemo(() => {
     return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
