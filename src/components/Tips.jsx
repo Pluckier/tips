@@ -38,6 +38,7 @@ function Tips() {
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isNotificationsReleased, setIsNotificationsReleased] = useState(false);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
@@ -135,6 +136,8 @@ function Tips() {
           setShowUpcomingOnly={setShowUpcomingOnly}
           isChatVisible={isChatVisible}
           setIsChatVisible={setIsChatVisible}
+          notificationCount={0}
+          onReleaseNotifications={() => setIsNotificationsReleased(true)}
         />
         <div className="tips-header-section">
           <DatePicker
@@ -189,6 +192,8 @@ function Tips() {
         setShowUpcomingOnly={setShowUpcomingOnly}
         isChatVisible={isChatVisible}
         setIsChatVisible={setIsChatVisible}
+        notificationCount={0}
+        onReleaseNotifications={() => setIsNotificationsReleased(true)}
       />
 
       {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
