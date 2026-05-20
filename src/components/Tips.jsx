@@ -127,7 +127,7 @@ function Tips() {
   if (error) {
     return (
       <div className="tips-container">
-        <details className="timeline-details" open>
+        <details className="timeline-details">
           <summary className="timeline-summary">⏱️ {formattedTime}</summary>
           <FilterControls 
             showHotTrainersOnly={showHotTrainersOnly}
@@ -186,7 +186,7 @@ function Tips() {
 
   return (
     <div className="tips-container">
-      <details className="timeline-details" open>
+      <details className="timeline-details">
         <summary className="timeline-summary">⏱️ {formattedTime}</summary>
         <FilterControls 
           showHotTrainersOnly={showHotTrainersOnly}
