@@ -119,33 +119,38 @@ function Tips() {
     return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
   }, [filteredTips]);
 
+  const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   // Only show the full skeleton if we are loading AND have no data to show.
   if (loading && tips.length === 0) return <TipsSkeleton selectedDate={selectedDate} />;
 
   if (error) {
     return (
       <div className="tips-container">
-        <FilterControls 
-          showHotTrainersOnly={showHotTrainersOnly}
-          setShowHotTrainersOnly={setShowHotTrainersOnly}
-          minOddsFilter={minOddsFilter}
-          setMinOddsFilter={setMinOddsFilter}
-          oddsFilter={oddsFilter}
-          setOddsFilter={setOddsFilter}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          uniquePlaces={uniquePlaces}
-          selectedPlaces={selectedPlaces}
-          togglePlace={togglePlace}
-          sortByAvg={sortByAvg}
-          setSortByAvg={setSortByAvg}
-          showUpcomingOnly={showUpcomingOnly}
-          setShowUpcomingOnly={setShowUpcomingOnly}
-          isChatVisible={isChatVisible}
-          setIsChatVisible={setIsChatVisible}
-          notificationCount={0}
-          onReleaseNotifications={() => setIsNotificationsReleased(true)}
-        />
+        <details className="timeline-details" open>
+          <summary className="timeline-summary">⏱️ {formattedTime}</summary>
+          <FilterControls 
+            showHotTrainersOnly={showHotTrainersOnly}
+            setShowHotTrainersOnly={setShowHotTrainersOnly}
+            minOddsFilter={minOddsFilter}
+            setMinOddsFilter={setMinOddsFilter}
+            oddsFilter={oddsFilter}
+            setOddsFilter={setOddsFilter}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            uniquePlaces={uniquePlaces}
+            selectedPlaces={selectedPlaces}
+            togglePlace={togglePlace}
+            sortByAvg={sortByAvg}
+            setSortByAvg={setSortByAvg}
+            showUpcomingOnly={showUpcomingOnly}
+            setShowUpcomingOnly={setShowUpcomingOnly}
+            isChatVisible={isChatVisible}
+            setIsChatVisible={setIsChatVisible}
+            notificationCount={0}
+            onReleaseNotifications={() => setIsNotificationsReleased(true)}
+          />
+        </details>
         <div className="tips-header-section">
           <DatePicker
             selected={pickerDate}
@@ -181,27 +186,30 @@ function Tips() {
 
   return (
     <div className="tips-container">
-      <FilterControls 
-        showHotTrainersOnly={showHotTrainersOnly}
-        setShowHotTrainersOnly={setShowHotTrainersOnly}
-        minOddsFilter={minOddsFilter}
-        setMinOddsFilter={setMinOddsFilter}
-        oddsFilter={oddsFilter}
-        setOddsFilter={setOddsFilter}
-        theme={theme}
-        toggleTheme={toggleTheme}
-        uniquePlaces={uniquePlaces}
-        selectedPlaces={selectedPlaces}
-        togglePlace={togglePlace}
-        sortByAvg={sortByAvg}
-        setSortByAvg={setSortByAvg}
-        showUpcomingOnly={showUpcomingOnly}
-        setShowUpcomingOnly={setShowUpcomingOnly}
-        isChatVisible={isChatVisible}
-        setIsChatVisible={setIsChatVisible}
-        notificationCount={0}
-        onReleaseNotifications={() => setIsNotificationsReleased(true)}
-      />
+      <details className="timeline-details" open>
+        <summary className="timeline-summary">⏱️ {formattedTime}</summary>
+        <FilterControls 
+          showHotTrainersOnly={showHotTrainersOnly}
+          setShowHotTrainersOnly={setShowHotTrainersOnly}
+          minOddsFilter={minOddsFilter}
+          setMinOddsFilter={setMinOddsFilter}
+          oddsFilter={oddsFilter}
+          setOddsFilter={setOddsFilter}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          uniquePlaces={uniquePlaces}
+          selectedPlaces={selectedPlaces}
+          togglePlace={togglePlace}
+          sortByAvg={sortByAvg}
+          setSortByAvg={setSortByAvg}
+          showUpcomingOnly={showUpcomingOnly}
+          setShowUpcomingOnly={setShowUpcomingOnly}
+          isChatVisible={isChatVisible}
+          setIsChatVisible={setIsChatVisible}
+          notificationCount={0}
+          onReleaseNotifications={() => setIsNotificationsReleased(true)}
+        />
+      </details>
 
       {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
