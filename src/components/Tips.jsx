@@ -42,7 +42,7 @@ function Tips() {
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -234,6 +234,7 @@ function Tips() {
               race={race} 
               selectedDate={selectedDate}
               sortByAvg={sortByAvg}
+              showUpcomingOnly={showUpcomingOnly}
             />
           ))}
         </div>

@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HOT_TRAINERS, getNapAndNextBestForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate, sortByAvg }) => {
+const TipCard = ({ race, selectedDate, sortByAvg, showUpcomingOnly }) => {
+  const [isVanishing, setIsVanishing] = useState(false);
+
+  // Monitor the race time to trigger the "vanish" animation just before 
+  // the parent component filters it out (at the 8 minute mark)
+  useEffect(() => {
+    const [hours, mins] = race.time.split(':').map(Number);
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const raceDate = new Date(y, m - 1, d);
+    raceDate.setHours(hours, mins, 0, 0);
+
+    const checkVanishStatus = () => {
+      const now = new Date();
+      const isToday = now.getFullYear() === y && (now.getMonth() + 1) === m && now.getDate() === d;
+
+      // Guard: Only animate if "Upcoming" filter is active and we're looking at today.
+      // This prevents cards from appearing vanished on past dates or when filtering is off.
+      if (!showUpcomingOnly || !isToday) {
+        if (isVanishing) setIsVanishing(false);
+        return;
+      }
+
+      const diffMinutes = (now - raceDate) / 60000;
+
+      // Parent filters at 8.0 mins. We start the "death throes" just before (~7m 59s)
+      if (diffMinutes >= 7.98 && !isVanishing) {
+        setIsVanishing(true);
+      }
+    };
+
+    const timer = setInterval(checkVanishStatus, 1000);
+    return () => clearInterval(timer);
+  }, [race.time, selectedDate, isVanishing, showUpcomingOnly]);
+
   const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
   const formValue = formMatch ? formMatch[1] : '0';
 
@@ -22,7 +55,7 @@ const TipCard = ({ race, selectedDate, sortByAvg }) => {
   );
 
   return (
-    <div className="tip-card">
+    <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
       <div className="tip-header">
         <div style={{ flex: 1 }}>
           <div className="tip-header-top">
