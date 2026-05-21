@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TrackWorker from './TrackWorker';
 
 const FilterControls = ({
@@ -24,6 +24,27 @@ const FilterControls = ({
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
+
+  const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
+
+  // Sync local state if fullscreen is toggled via Escape key or browser controls
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   return (
     <>
@@ -84,6 +105,13 @@ const FilterControls = ({
           title="Show only races that haven't run yet"
         >
           🕒 Upcoming
+        </button>
+        <button
+          onClick={toggleFullscreen}
+          className={`filter-toggle-btn ${isFullscreen ? 'active' : ''}`}
+          title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+        >
+          {isFullscreen ? '⛶ Windowed' : '⛶ Fullscreen'}
         </button>
         <button 
           onClick={toggleTheme}
