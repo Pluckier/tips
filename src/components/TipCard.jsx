@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { HOT_TRAINERS, getNapAndNextBestForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate, sortByAvg, showUpcomingOnly }) => {
+const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingOnly }) => {
   const [isVanishing, setIsVanishing] = useState(false);
+  const [localSortByAvg, setLocalSortByAvg] = useState(globalSortByAvg);
+
+  // Update local sort preference if the global one changes
+  useEffect(() => {
+    setLocalSortByAvg(globalSortByAvg);
+  }, [globalSortByAvg]);
 
   // Monitor the race time to trigger the "vanish" animation just before 
   // the parent component filters it out (at the 8 minute mark)
@@ -39,24 +45,24 @@ const TipCard = ({ race, selectedDate, sortByAvg, showUpcomingOnly }) => {
   const formValue = formMatch ? formMatch[1] : '0';
 
   // Get both the NAP and the Next Best horse for the race
-  const { nap, nextBest } = getNapAndNextBestForRace(race, sortByAvg);
+  const { nap, nextBest } = getNapAndNextBestForRace(race, localSortByAvg);
 
-  const currentOdds = nap?.odds?.[nap.odds.length - 1];
+  const currentOdds = nap?.odds?.[nap.odds.length - 1]; // This is fine, odds are not affected by sort strategy
   const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
 
   const nbOdds = nextBest?.odds?.[nextBest.odds.length - 1];
   const displayNbOdds = nbOdds === "null" ? "NR" : (nbOdds || "N/A");
 
-  const napScore = nap ? (sortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
+  const napScore = nap ? (localSortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
 
-  const isHotTrainer = nap && (
+  const isHotTrainer = nap && ( // This is fine, hot trainer status is not affected by sort strategy
     HOT_TRAINERS.some(hot => nap.trainer?.includes(hot)) || 
     nap.owner?.startsWith("STAR")
   );
 
   return (
     <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
-      <div className="tip-header">
+      <div className="tip-header" onClick={() => setLocalSortByAvg(prev => !prev)} style={{ cursor: 'pointer' }} title="Click header to toggle rating strategy">
         <div style={{ flex: 1 }}>
           <div className="tip-header-top">
             <span className="tip-time">{race.time}</span>
@@ -70,6 +76,7 @@ const TipCard = ({ race, selectedDate, sortByAvg, showUpcomingOnly }) => {
                   href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`} // Assuming NAP is the one linked
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
                   title={`View ${nap.name} in ${race.place} at ${race.time}`}
                 >
                   <img src={nap.silks} alt="silks" className="tip-silks-inline" />
@@ -79,12 +86,22 @@ const TipCard = ({ race, selectedDate, sortByAvg, showUpcomingOnly }) => {
                 <span className="tip-horse-identity">
                   {nap.number}. {nap.name} 
                 </span>
-                <span className="tip-odds-inline">{displayOdds}</span>
+                <div className="tip-odds-row">
+                  <span className="tip-odds-inline">{displayOdds}</span>
+                  <button
+                    className="tip-card-sort-toggle-btn"
+                    title={`Toggle between ${localSortByAvg ? 'Recent' : 'Highest'} strategy`}
+                  >
+                    📊 {localSortByAvg ? 'Recent' : 'Highest'}
+                  </button>
+                </div>
               </span>
             </div>
           )}
         </div>
-        <span className="tip-form-percentage"> ({formValue}%)</span>
+        <div className="tip-header-right">
+          <span className="tip-form-percentage"> ({formValue}%)</span>
+        </div>
       </div>
       <div className="tip-body">
         {nap ? (

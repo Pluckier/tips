@@ -74,6 +74,42 @@ body {
   transform: translateY(-10px);
 }
 
+.tip-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.tip-horse-identity-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.tip-odds-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Styling for the local sort toggle button on the tip card */
+.tip-card-sort-toggle-btn {
+  padding: 2px 6px; /* Smaller padding */
+  border-radius: 12px; /* Smaller radius */
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background-color: var(--container-bg);
+  color: var(--text-color);
+  font-size: 0.75rem; /* Smaller font size */
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
 @keyframes vanish-puff {
   0% { transform: scale(1); opacity: 1; filter: brightness(1) blur(0); }
   25% { transform: scale(1.05); filter: brightness(2) blur(2px); }
@@ -83,6 +119,12 @@ body {
 .tip-card.vanishing {
   animation: vanish-puff 0.8s ease-in forwards;
   pointer-events: none;
+}
+
+.tip-card-sort-toggle-btn:hover {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+  border-color: var(--header-bg);
 }
 
 .tip-header {
@@ -139,7 +181,6 @@ body {
   color: #48bb78;
   font-size: 1.2rem;
   font-weight: 700;
-  margin-top: 4px; /* Add some space between name and odds */
 }
 
 .tip-rating, .tip-jockey, .tip-info {
