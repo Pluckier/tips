@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import TipCard from './TipCard';
 import Chatter from './Chatter';
+import AuthGuard from './AuthGuard';
 import { useFetchTips } from '../hooks/useFetchTips';
 import TipsSkeleton from './TipsSkeleton';
 import { useFilteredTips } from '../hooks/useFilteredTips';
@@ -18,6 +19,9 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
     Racing Info: {value} 📅
   </h2>
 ));
+
+// 🟢 SET TO 'false' TO DISABLE AUTH GUARD
+const AUTH_ACTIVE = false;
 
 function Tips() {
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -121,10 +125,70 @@ function Tips() {
 
   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // Only show the full skeleton if we are loading AND have no data to show.
-  if (loading && tips.length === 0) return <TipsSkeleton selectedDate={selectedDate} />;
+  const renderContent = (authData = {}) => {
+    // Only show the full skeleton if we are loading AND have no data to show.
+    if (loading && tips.length === 0) return <TipsSkeleton selectedDate={selectedDate} />;
 
-  if (error) {
+    if (error) {
+      return (
+        <div className="tips-container">
+          <details className="timeline-details">
+            <summary className="timeline-summary">⏱️ {formattedTime}</summary>
+            <FilterControls 
+              showHotTrainersOnly={showHotTrainersOnly}
+              setShowHotTrainersOnly={setShowHotTrainersOnly}
+              minOddsFilter={minOddsFilter}
+              setMinOddsFilter={setMinOddsFilter}
+              oddsFilter={oddsFilter}
+              setOddsFilter={setOddsFilter}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              uniquePlaces={uniquePlaces}
+              selectedPlaces={selectedPlaces}
+              togglePlace={togglePlace}
+              sortByAvg={sortByAvg}
+              setSortByAvg={setSortByAvg}
+              showUpcomingOnly={showUpcomingOnly}
+              setShowUpcomingOnly={setShowUpcomingOnly}
+              isChatVisible={isChatVisible}
+              setIsChatVisible={setIsChatVisible}
+              notificationCount={0}
+              onReleaseNotifications={() => setIsNotificationsReleased(true)}
+            />
+          </details>
+          <div className="tips-header-section">
+            <DatePicker
+              selected={pickerDate}
+              onChange={handleDateChange}
+              dateFormat="dd/MM/yyyy"
+              customInput={<CustomDateHeader />}
+              withPortal
+              portalId="root"
+            />
+          </div>
+          <div className="tips-error-content">
+            <div className="tips-error-card">
+              <h3>No Data Available</h3>
+              <p>We couldn't retrieve any racing tips for this date. It's possible there are no meetings scheduled or the data isn't available yet.</p>
+              <button 
+                onClick={() => {
+                  const now = new Date();
+                  const y = now.getFullYear();
+                  const m = String(now.getMonth() + 1).padStart(2, '0');
+                  const d = String(now.getDate()).padStart(2, '0');
+                  setSelectedDate(`${y}-${m}-${d}`);
+                }} 
+                className="filter-toggle-btn active"
+                style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
+              >
+                📅 Get Today's Tips...
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="tips-container">
         <details className="timeline-details">
@@ -151,6 +215,9 @@ function Tips() {
             onReleaseNotifications={() => setIsNotificationsReleased(true)}
           />
         </details>
+
+        {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
+
         <div className="tips-header-section">
           <DatePicker
             selected={pickerDate}
@@ -161,85 +228,32 @@ function Tips() {
             portalId="root"
           />
         </div>
-        <div className="tips-error-content">
-          <div className="tips-error-card">
-            <h3>No Data Available</h3>
-            <p>We couldn't retrieve any racing tips for this date. It's possible there are no meetings scheduled or the data isn't available yet.</p>
-            <button 
-              onClick={() => {
-                const now = new Date();
-                const y = now.getFullYear();
-                const m = String(now.getMonth() + 1).padStart(2, '0');
-                const d = String(now.getDate()).padStart(2, '0');
-                setSelectedDate(`${y}-${m}-${d}`);
-              }} 
-              className="filter-toggle-btn active"
-              style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
-            >
-              📅 Get Today's Tips...
-            </button>
+
+        {filteredTips.length === 0 ? (
+          <p>No tips available for today yet.</p>
+        ) : (
+          <div className="tips-grid">
+            {sortedTips.map((race) => (
+              <TipCard 
+                key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
+                race={race} 
+                selectedDate={selectedDate}
+                sortByAvg={sortByAvg}
+                showUpcomingOnly={showUpcomingOnly}
+              />
+            ))}
           </div>
-        </div>
+        )}
       </div>
     );
-  }
+  };
+
+  if (!AUTH_ACTIVE) return renderContent();
 
   return (
-    <div className="tips-container">
-      <details className="timeline-details">
-        <summary className="timeline-summary">⏱️ {formattedTime}</summary>
-        <FilterControls 
-          showHotTrainersOnly={showHotTrainersOnly}
-          setShowHotTrainersOnly={setShowHotTrainersOnly}
-          minOddsFilter={minOddsFilter}
-          setMinOddsFilter={setMinOddsFilter}
-          oddsFilter={oddsFilter}
-          setOddsFilter={setOddsFilter}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          uniquePlaces={uniquePlaces}
-          selectedPlaces={selectedPlaces}
-          togglePlace={togglePlace}
-          sortByAvg={sortByAvg}
-          setSortByAvg={setSortByAvg}
-          showUpcomingOnly={showUpcomingOnly}
-          setShowUpcomingOnly={setShowUpcomingOnly}
-          isChatVisible={isChatVisible}
-          setIsChatVisible={setIsChatVisible}
-          notificationCount={0}
-          onReleaseNotifications={() => setIsNotificationsReleased(true)}
-        />
-      </details>
-
-      {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
-
-      <div className="tips-header-section">
-        <DatePicker
-          selected={pickerDate}
-          onChange={handleDateChange}
-          dateFormat="dd/MM/yyyy"
-          customInput={<CustomDateHeader />}
-          withPortal
-          portalId="root"
-        />
-      </div>
-
-      {filteredTips.length === 0 ? (
-        <p>No tips available for today yet.</p>
-      ) : (
-        <div className="tips-grid">
-          {sortedTips.map((race) => (
-            <TipCard 
-              key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
-              race={race} 
-              selectedDate={selectedDate}
-              sortByAvg={sortByAvg}
-              showUpcomingOnly={showUpcomingOnly}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+    <AuthGuard>
+      {(authData) => renderContent(authData)}
+    </AuthGuard>
   );
 }
 
