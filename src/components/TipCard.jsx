@@ -47,11 +47,32 @@ const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingO
   // Get both the NAP and the Next Best horse for the race
   const { nap, nextBest } = getNapAndNextBestForRace(race, localSortByAvg);
 
-  const currentOdds = nap?.odds?.[nap.odds.length - 1]; // This is fine, odds are not affected by sort strategy
+  const napOddsArr = nap?.odds || [];
+  const currentOdds = napOddsArr[napOddsArr.length - 1]; 
   const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
 
-  const nbOdds = nextBest?.odds?.[nextBest.odds.length - 1];
+  const nbOddsArr = nextBest?.odds || [];
+  const nbOdds = nbOddsArr[nbOddsArr.length - 1];
   const displayNbOdds = nbOdds === "null" ? "NR" : (nbOdds || "N/A");
+
+  const getMovementIndicator = (oddsArray) => {
+    if (oddsArray.length < 2) return null;
+    const cur = parseFloat(oddsArray[oddsArray.length - 1]);
+    const prev = parseFloat(oddsArray[oddsArray.length - 2]);
+    if (isNaN(cur) || isNaN(prev)) return null;
+    if (cur > prev) return (
+      <span style={{ color: '#3b82f6', marginLeft: '4px', fontSize: '0.85em', fontWeight: 'bold' }}>▼</span>
+    );
+    if (cur < prev) return (
+      <span style={{ color: '#ef4444', marginLeft: '4px', fontSize: '0.85em', fontWeight: 'bold' }}>▲</span>
+    );
+    return (
+      <span style={{ color: 'var(--text-h)', marginLeft: '4px', fontSize: '0.85em', opacity: 0.5 }}>~</span>
+    );
+  };
+
+  const napMovement = getMovementIndicator(napOddsArr);
+  const nbMovement = getMovementIndicator(nbOddsArr);
 
   const napScore = nap ? (localSortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
 
@@ -87,7 +108,7 @@ const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingO
                   {nap.number}. {nap.name} 
                 </span>
                 <div className="tip-odds-row">
-                  <span className="tip-odds-inline">{displayOdds}</span>
+                  <span className="tip-odds-inline">{displayOdds}{napMovement}</span>
                   <button
                     className="tip-card-sort-toggle-btn"
                     title={`Toggle between ${localSortByAvg ? 'Recent' : 'Highest'} strategy`}
@@ -124,7 +145,7 @@ const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingO
                   {nextBest.silks && <img src={nextBest.silks} alt="silks" className="tip-silks-inline-small" />}
                   <span className="next-best-identity">
                     {nextBest.number}. {nextBest.name} 
-                    <span className="tip-odds-inline-small"> {displayNbOdds}</span>
+                    <span className="tip-odds-inline-small"> {displayNbOdds}{nbMovement}</span>
                   </span>
                 </div>
               </>
