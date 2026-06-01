@@ -18,9 +18,7 @@ const FilterControls = ({
   showUpcomingOnly,
   setShowUpcomingOnly,
   isChatVisible,
-  setIsChatVisible,
-  notificationCount = 0,
-  onReleaseNotifications
+  setIsChatVisible
 }) => {
   const oddsSteps = [0, 20, 15, 10, 5];
   const minOddsSteps = [0, 5, 10, 15, 20];
@@ -72,33 +70,6 @@ const FilterControls = ({
         >
           💬
         </button>
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <button
-            className={`filter-toggle-btn ${notificationCount > 0 ? 'active' : 'disabled'}`}
-            disabled={notificationCount === 0}
-            onClick={onReleaseNotifications}
-            style={{ cursor: notificationCount > 0 ? 'pointer' : 'default' }}
-            title={notificationCount > 0 ? `Show ${notificationCount} notifications` : "Data updates automatically every 15 mins"}
-          >
-            ↻
-            {notificationCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                backgroundColor: '#e53e3e',
-                color: 'white',
-                borderRadius: '10px',
-                padding: '2px 6px',
-                fontSize: '0.65rem',
-                fontWeight: '800',
-                zIndex: 2
-              }}>
-                {notificationCount}
-              </span>
-            )}
-          </button>
-        </div>
         <button
           onClick={() => setShowUpcomingOnly(prev => !prev)}
           className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}
