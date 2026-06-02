@@ -20,7 +20,25 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
   </h2>
 ));
 
-// 🟢 SET TO 'false' TO DISABLE AUTH GUARD
+const SYMBOL_DESCRIPTIONS = {
+  '✨': 'Favourite',
+  '⭐': 'Top Rated (3 Runs)',
+  '🌟': '2nd Rated (3 runs)',
+  '📊': 'Top Spike on chart',
+  '📈': '2nd Top Spike',
+  '🏃': 'Only last run',
+  '💀': 'Bottom rated',
+  '💎': 'Massive spike',
+  '🎯': 'Handicap newbie',
+  '🔥': 'Hot trainer',
+  '🚀': 'Improving',
+  '🟣': 'Light Today'
+};
+
+// Define the exact order requested for the toggle buttons
+const PREFERRED_SYMBOL_ORDER = ['✨', '⭐', '🌟', '📊', '📈', '🏃', '🔥', '💎', '🟣', '🚀', '🎯', '💀'];
+
+//  SET TO 'false' TO DISABLE AUTH GUARD
 const AUTH_ACTIVE = false;
 
 function Tips() {
@@ -106,7 +124,12 @@ function Tips() {
         }
       });
     });
-    return [...symbols].sort();
+    return [...symbols].sort((a, b) => {
+      const aIdx = PREFERRED_SYMBOL_ORDER.indexOf(a);
+      const bIdx = PREFERRED_SYMBOL_ORDER.indexOf(b);
+      // Ensure unknown symbols (if any) are pushed to the end
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    });
   }, [tips]);
 
   // Auto-select all symbols by default once they are discovered in the tips data
@@ -210,7 +233,7 @@ function Tips() {
                 key={symbol}
                 onClick={() => toggleSymbol(symbol)}
                 className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
-                title={`Filter by ${symbol}`}
+                title={SYMBOL_DESCRIPTIONS[symbol] || `Filter by ${symbol}`}
               >
                 {symbol}
               </button>
@@ -278,7 +301,7 @@ function Tips() {
                 key={symbol}
                 onClick={() => toggleSymbol(symbol)}
                 className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
-                title={`Filter by ${symbol}`}
+                title={SYMBOL_DESCRIPTIONS[symbol] || `Filter by ${symbol}`}
               >
                 {symbol}
               </button>

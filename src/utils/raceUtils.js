@@ -152,17 +152,17 @@ export const getTipRunnersForRace = (race) => {
   // Apply Criteria
   allRunners.forEach(h => {
     const isHot = HOT_TRAINERS.some(hot => h.trainer?.includes(hot)) || h.owner?.startsWith("STAR");
-    if (isHot) addHorse(h, '🔥 Trainer');
+    if (isHot) addHorse(h, '🔥 Hot trainer');
 
     if (isHandicap && (h.past || []).length === 3) {
-      addHorse(h, '🎯 H3');
+      addHorse(h, '🎯 Handicap newbie');
     }
 
     // Identify Improvers: Last run rating equals lifetime peak rating
     const lastRating = calculateLastRunRating(h);
     const lastOdd = parseFloat(h.odds?.[h.odds.length - 1]);
     if (lastRating > 0 && lastRating === calculatePeakRating(h) && !isNaN(lastOdd) && lastOdd < 250) {
-      addHorse(h, '🚀 Imp');
+      addHorse(h, '🚀 Improving');
     }
 
     // Identify Underweight: Lighter than any past run with same Distance, Going, and Class
@@ -199,24 +199,24 @@ export const getTipRunnersForRace = (race) => {
 
     const pastWeights = comparablePast.map(p => parseWeight(p.weight)).filter(pw => pw > 0);
     if (currentWeight > 0 && pastWeights.length > 0 && currentWeight <= Math.min(...pastWeights)) {
-      addHorse(h, '🟣 Under');     
+      addHorse(h, '🟣 Light Today');     
     }
   });
 
-  addHorse(favorite, '✨ Fav');
-  addHorse(topRated, '📊 Rated');
+  addHorse(favorite, '✨ Favourite');
+  addHorse(topRated, '📊 Top Spike on chart');
 
   const topPeak = calculatePeakRating(topRated);
   const secondPeak = secondRated ? calculatePeakRating(secondRated) : 0;
   if (topPeak > 0 && topPeak >= (secondPeak * 2)) {
-    addHorse(topRated, '💎 Class');
+    addHorse(topRated, '💎 Massive spike');
   }
 
-  if (secondRated) addHorse(secondRated, '📈 2nd');
-  addHorse(topAvgRated, '⭐ Avg');
-  if (secondAvgRated) addHorse(secondAvgRated, '🌟 A2');
-  addHorse(topLastRated, '🏃 Last');
-  addHorse(wildcard, '💀 Bottom');
+  if (secondRated) addHorse(secondRated, '📈 2nd Top Spike');
+  addHorse(topAvgRated, '⭐ Top Rated (3 Runs)');
+  if (secondAvgRated) addHorse(secondAvgRated, '🌟 2nd Rated (3 runs)');
+  addHorse(topLastRated, '🏃 Only last run');
+  addHorse(wildcard, '💀 Bottom rated');
 
   return Array.from(tipMap.values()).sort((a, b) => {
     const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
