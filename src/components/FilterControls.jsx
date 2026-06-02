@@ -10,10 +10,7 @@ const FilterControls = ({
   showUpcomingOnly,
   setShowUpcomingOnly,
   isChatVisible,
-  setIsChatVisible,
-  uniqueSymbols,
-  selectedSymbols,
-  toggleSymbol
+  setIsChatVisible
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
 
@@ -80,21 +77,6 @@ const FilterControls = ({
               className={`filter-toggle-btn ${selectedPlaces.has(place) ? 'active' : ''}`}
             >
               {place}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {uniqueSymbols && uniqueSymbols.length > 0 && (
-        <div className="place-filters-row" style={{ marginTop: '8px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
-          {uniqueSymbols.map(symbol => (
-            <button
-              key={symbol}
-              onClick={() => toggleSymbol(symbol)}
-              className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
-              title={`Filter by ${symbol}`}
-            >
-              {symbol}
             </button>
           ))}
         </div>

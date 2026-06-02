@@ -182,11 +182,24 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
-            uniqueSymbols={uniqueSymbols}
-            selectedSymbols={selectedSymbols}
-            toggleSymbol={toggleSymbol}
           />
         </details>
+
+        {uniqueSymbols.length > 0 && (
+          <div className="place-filters-row">
+            {uniqueSymbols.map(symbol => (
+              <button
+                key={symbol}
+                onClick={() => toggleSymbol(symbol)}
+                className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
+                title={`Filter by ${symbol}`}
+              >
+                {symbol}
+              </button>
+            ))}
+          </div>
+        )}
+
           <div className="tips-error-content">
             <div className="tips-error-card">
               <h3>No Data Available</h3>
@@ -235,11 +248,23 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
-            uniqueSymbols={uniqueSymbols}
-            selectedSymbols={selectedSymbols}
-            toggleSymbol={toggleSymbol}
           />
         </details>
+
+        {uniqueSymbols.length > 0 && (
+          <div className="place-filters-row">
+            {uniqueSymbols.map(symbol => (
+              <button
+                key={symbol}
+                onClick={() => toggleSymbol(symbol)}
+                className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
+                title={`Filter by ${symbol}`}
+              >
+                {symbol}
+              </button>
+            ))}
+          </div>
+        )}
 
         {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
