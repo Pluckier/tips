@@ -18,15 +18,17 @@ const TipsSkeleton = ({ selectedDate }) => {
   const displayDate = selectedDate ? selectedDate.split('-').reverse().join('/') : '...';
 
   return (
-    <div className="tips-container">
+    <div className="tips-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div className="tips-header-actions" style={{ visibility: 'hidden' }}>
         <button className="theme-toggle-btn">🌙 Dark Mode</button>
       </div>
       <h2>Racing Info: {displayDate} 📅</h2>
-      <div className="tips-grid">
-        {[...Array(6)].map((_, i) => (
-          <TipCardSkeleton key={i} />
-        ))}
+      <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+        <div className="tips-grid">
+          {[...Array(6)].map((_, i) => (
+            <TipCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     </div>
   );

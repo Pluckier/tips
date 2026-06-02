@@ -47,6 +47,24 @@ function Tips() {
     return () => clearInterval(timer);
   }, []);
 
+  // Prevent the main page (body) from scrolling to ensure our fixed-header 
+  // layout works correctly without triggering a secondary window scrollbar.
+  useEffect(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.height = '100%';
+    document.body.style.height = '100%';
+    const root = document.getElementById('root');
+    if (root) root.style.height = '100%';
+    return () => {
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.style.overflow = '';
+      if (root) root.style.height = '';
+    };
+  }, []);
+
   // Auto-refresh logic: trigger a refresh every 15 minutes
   useEffect(() => {
     const AUTO_REFRESH_MS = 15 * 60 * 1000;
@@ -159,7 +177,7 @@ function Tips() {
 
     if (error) {
       return (
-        <div className="tips-container">
+        <div className="tips-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
           <div className="tips-header-section">
             <DatePicker
               selected={pickerDate}
@@ -199,24 +217,26 @@ function Tips() {
             ))}
           </div>
         )}
-
-          <div className="tips-error-content">
-            <div className="tips-error-card">
-              <h3>No Data Available</h3>
-              <p>We couldn't retrieve any racing tips for this date. It's possible there are no meetings scheduled or the data isn't available yet.</p>
-              <button 
-                onClick={() => {
-                  const now = new Date();
-                  const y = now.getFullYear();
-                  const m = String(now.getMonth() + 1).padStart(2, '0');
-                  const d = String(now.getDate()).padStart(2, '0');
-                  setSelectedDate(`${y}-${m}-${d}`);
-                }} 
-                className="filter-toggle-btn active"
-                style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
-              >
-                📅 Get Today's Tips...
-              </button>
+          
+          <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+            <div className="tips-error-content">
+              <div className="tips-error-card">
+                <h3>No Data Available</h3>
+                <p>We couldn't retrieve any racing tips for this date. It's possible there are no meetings scheduled or the data isn't available yet.</p>
+                <button 
+                  onClick={() => {
+                    const now = new Date();
+                    const y = now.getFullYear();
+                    const m = String(now.getMonth() + 1).padStart(2, '0');
+                    const d = String(now.getDate()).padStart(2, '0');
+                    setSelectedDate(`${y}-${m}-${d}`);
+                  }} 
+                  className="filter-toggle-btn active"
+                  style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
+                >
+                  📅 Get Today's Tips...
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -224,7 +244,7 @@ function Tips() {
     }
 
     return (
-      <div className="tips-container">
+      <div className="tips-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
         <div className="tips-header-section">
           <DatePicker
             selected={pickerDate}
@@ -266,23 +286,25 @@ function Tips() {
           </div>
         )}
 
-        {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
+        <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+          {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
-        {filteredTips.length === 0 ? (
-          <p>No tips available for today yet.</p>
-        ) : (
-          <div className="tips-grid">
-            {sortedTips.map((race) => (
-              <TipCard 
-                key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
-                race={race} 
-                selectedDate={selectedDate}
-                showUpcomingOnly={showUpcomingOnly}
-                selectedSymbols={selectedSymbols}
-              />
-            ))}
-          </div>
-        )}
+          {filteredTips.length === 0 ? (
+            <p style={{ textAlign: 'center', marginTop: '40px', opacity: 0.7 }}>No tips available for today yet.</p>
+          ) : (
+            <div className="tips-grid">
+              {sortedTips.map((race) => (
+                <TipCard 
+                  key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
+                  race={race} 
+                  selectedDate={selectedDate}
+                  showUpcomingOnly={showUpcomingOnly}
+                  selectedSymbols={selectedSymbols}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
