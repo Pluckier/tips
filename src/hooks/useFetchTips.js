@@ -37,7 +37,9 @@ export const useFetchTips = (selectedDate) => {
         const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
         console.log(`[useFetchTips Hook] Requesting: ${url}`);
         
-        const response = await fetch(url, { signal: abortController.signal });
+        const response = await fetch(url, { 
+          cache: 'no-store'
+        });
         if (!response.ok) {
           throw new Error(`Could not fetch tips for ${dateStr}`);
         }
