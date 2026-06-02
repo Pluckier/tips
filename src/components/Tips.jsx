@@ -7,6 +7,7 @@ import TipsSkeleton from './TipsSkeleton';
 import { useFilteredTips } from '../hooks/useFilteredTips';
 import FilterControls from './FilterControls';
 import { useTheme } from '../hooks/useTheme';
+import { getTipRunnersForRace } from '../utils/raceUtils';
 
 // Import React DatePicker
 import DatePicker from "react-datepicker";
@@ -34,9 +35,11 @@ function Tips() {
   const { tips, loading, error, refresh, lastRefreshTime } = useFetchTips(selectedDate);
   const { theme, toggleTheme } = useTheme();
   const [selectedPlaces, setSelectedPlaces] = useState(new Set());
+  const [selectedSymbols, setSelectedSymbols] = useState(new Set());
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const [hasInitializedSymbols, setHasInitializedSymbols] = useState(false);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
@@ -58,6 +61,8 @@ function Tips() {
   // Reset filters when the date changes to ensure we don't hide data from the new date
   React.useEffect(() => {
     setSelectedPlaces(new Set());
+    setSelectedSymbols(new Set());
+    setHasInitializedSymbols(false);
   }, [selectedDate]);
 
   const uniquePlaces = useMemo(() => {
@@ -69,6 +74,30 @@ function Tips() {
     const [y, m, d] = selectedDate.split('-').map(Number);
     return new Date(y, m - 1, d);
   }, [selectedDate]);
+
+  const uniqueSymbols = useMemo(() => {
+    const symbols = new Set();
+    tips.forEach(race => {
+      const runners = getTipRunnersForRace(race);
+      runners.forEach(runner => {
+        if (runner.reasons) {
+          Array.from(runner.reasons).forEach(reason => {
+            const sym = reason.split(' ')[0];
+            if (sym) symbols.add(sym);
+          });
+        }
+      });
+    });
+    return [...symbols].sort();
+  }, [tips]);
+
+  // Auto-select all symbols by default once they are discovered in the tips data
+  useEffect(() => {
+    if (!loading && tips.length > 0 && uniqueSymbols.length > 0 && !hasInitializedSymbols) {
+      setSelectedSymbols(new Set(uniqueSymbols));
+      setHasInitializedSymbols(true);
+    }
+  }, [loading, tips, uniqueSymbols, hasInitializedSymbols]);
 
   const handleDateChange = (date) => {
     const yyyy = date.getFullYear();
@@ -82,6 +111,15 @@ function Tips() {
       const next = new Set(prev);
       if (next.has(place)) next.delete(place);
       else next.add(place);
+      return next;
+    });
+  };
+
+  const toggleSymbol = (symbol) => {
+    setSelectedSymbols(prev => {
+      const next = new Set(prev);
+      if (next.has(symbol)) next.delete(symbol);
+      else next.add(symbol);
       return next;
     });
   };
@@ -122,20 +160,6 @@ function Tips() {
     if (error) {
       return (
         <div className="tips-container">
-          <details className="timeline-details">
-            <summary className="timeline-summary">⏱️ {formattedTime}</summary>
-            <FilterControls 
-              theme={theme}
-              toggleTheme={toggleTheme}
-              uniquePlaces={uniquePlaces}
-              selectedPlaces={selectedPlaces}
-              togglePlace={togglePlace}
-              showUpcomingOnly={showUpcomingOnly}
-              setShowUpcomingOnly={setShowUpcomingOnly}
-              isChatVisible={isChatVisible}
-              setIsChatVisible={setIsChatVisible}
-            />
-          </details>
           <div className="tips-header-section">
             <DatePicker
               selected={pickerDate}
@@ -146,6 +170,23 @@ function Tips() {
               portalId="root"
             />
           </div>
+        <details className="timeline-details">
+          <summary className="timeline-summary">⏱️ {formattedTime}</summary>
+          <FilterControls 
+            theme={theme}
+            toggleTheme={toggleTheme}
+            uniquePlaces={uniquePlaces}
+            selectedPlaces={selectedPlaces}
+            togglePlace={togglePlace}
+            showUpcomingOnly={showUpcomingOnly}
+            setShowUpcomingOnly={setShowUpcomingOnly}
+            isChatVisible={isChatVisible}
+            setIsChatVisible={setIsChatVisible}
+            uniqueSymbols={uniqueSymbols}
+            selectedSymbols={selectedSymbols}
+            toggleSymbol={toggleSymbol}
+          />
+        </details>
           <div className="tips-error-content">
             <div className="tips-error-card">
               <h3>No Data Available</h3>
@@ -171,23 +212,6 @@ function Tips() {
 
     return (
       <div className="tips-container">
-        <details className="timeline-details">
-          <summary className="timeline-summary">⏱️ {formattedTime}</summary>
-          <FilterControls 
-            theme={theme}
-            toggleTheme={toggleTheme}
-            uniquePlaces={uniquePlaces}
-            selectedPlaces={selectedPlaces}
-            togglePlace={togglePlace}
-            showUpcomingOnly={showUpcomingOnly}
-            setShowUpcomingOnly={setShowUpcomingOnly}
-            isChatVisible={isChatVisible}
-                setIsChatVisible={setIsChatVisible}
-          />
-        </details>
-
-        {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
-
         <div className="tips-header-section">
           <DatePicker
             selected={pickerDate}
@@ -199,6 +223,26 @@ function Tips() {
           />
         </div>
 
+        <details className="timeline-details">
+          <summary className="timeline-summary">⏱️ {formattedTime}</summary>
+          <FilterControls 
+            theme={theme}
+            toggleTheme={toggleTheme}
+            uniquePlaces={uniquePlaces}
+            selectedPlaces={selectedPlaces}
+            togglePlace={togglePlace}
+            showUpcomingOnly={showUpcomingOnly}
+            setShowUpcomingOnly={setShowUpcomingOnly}
+            isChatVisible={isChatVisible}
+            setIsChatVisible={setIsChatVisible}
+            uniqueSymbols={uniqueSymbols}
+            selectedSymbols={selectedSymbols}
+            toggleSymbol={toggleSymbol}
+          />
+        </details>
+
+        {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
+
         {filteredTips.length === 0 ? (
           <p>No tips available for today yet.</p>
         ) : (
@@ -209,6 +253,7 @@ function Tips() {
                 race={race} 
                 selectedDate={selectedDate}
                 showUpcomingOnly={showUpcomingOnly}
+                selectedSymbols={selectedSymbols}
               />
             ))}
           </div>

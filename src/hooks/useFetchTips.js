@@ -28,14 +28,12 @@ export const useFetchTips = (selectedDate) => {
         lastDateRef.current = selectedDate;
       }
 
-      console.log(`[useFetchTips Hook] Initiating fetch for: ${selectedDate}`);
       try {
         // Parse YYYY-MM-DD to DD-MM-YYYY for the API
         const [year, month, day] = selectedDate.split('-');
         const dateStr = `${day}-${month}-${year}`;
 
         const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
-        console.log(`[useFetchTips Hook] Requesting: ${url}`);
         
         const response = await fetch(url, { 
           cache: 'no-store'
@@ -47,7 +45,6 @@ export const useFetchTips = (selectedDate) => {
         const data = await response.json();
         setTips(data);
         setLastRefreshTime(Date.now());
-        console.log(`[useFetchTips Hook] Data received: ${data.length} entries.`);
       } catch (err) {
         if (err.name === 'AbortError') return; // Ignore expected cancellation errors
         setError(err.message);

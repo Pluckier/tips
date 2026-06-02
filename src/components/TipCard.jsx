@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getTipRunnersForRace } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate, showUpcomingOnly }) => {
+const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
   const [isVanishing, setIsVanishing] = useState(false);
 
   // Monitor the race time to trigger the "vanish" animation just before 
@@ -39,12 +39,33 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly }) => {
   const formValue = formMatch ? formMatch[1] : '0';
 
   // Get the shortlisted runners based on new criteria
-  const tipRunners = getTipRunnersForRace(race);
+  const allTipRunners = getTipRunnersForRace(race);
+  const tipRunners = useMemo(() => {
+    return allTipRunners.map(runner => {
+      // Filter out reasons/symbols that are currently toggled off
+      const activeReasons = Array.from(runner.reasons).filter(r => 
+        selectedSymbols.has(r.split(' ')[0])
+      );
+      // If no symbols are left active for this horse, it's no longer a 'tipped' horse
+      if (activeReasons.length === 0) return null;
+      return { ...runner, activeReasons };
+    }).filter(Boolean);
+  }, [allTipRunners, selectedSymbols]);
 
-  const untippedCount = (race.horses || []).filter(h => {
+  const allValidRunners = (race.horses || []).filter(h => {
     const lastOdd = h.odds?.[h.odds.length - 1];
     return lastOdd !== "null" && lastOdd !== "NR";
-  }).length - tipRunners.length;
+  });
+
+  const untippedHorses = allValidRunners
+    .filter(validRunner => !tipRunners.some(tippedRunner => tippedRunner.name === validRunner.name))
+    .sort((a, b) => {
+      const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
+      const valB = parseFloat(b.odds?.[b.odds.length - 1]) || 999;
+      if (valA !== valB) return valA - valB;
+      return a.number - b.number;
+    });
+  const untippedCount = untippedHorses.length;
 
   const getMovementIndicator = (oddsArray) => {
     if (oddsArray.length < 2) return null;
@@ -70,55 +91,87 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly }) => {
           <span className="tip-place">{race.place}</span>
         </div>
         <div className="tip-race-info">
-          {race.detail} ({formValue}%)
+          {race.detail} ({race.going})
         </div>
       </div>
 
       <div className="tip-body">
-        {tipRunners.length > 0 ? (
-          <>
-            <div className="shortlist-container">
-              {tipRunners.map((runner) => {
+        {tipRunners.length > 0 && (
+          <div className="shortlist-container">
+            {tipRunners.map((runner) => {
+              const oddsArr = runner.odds || [];
+              const currentOdds = oddsArr[oddsArr.length - 1];
+              const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "x");
+              const movement = getMovementIndicator(oddsArr);
+
+              return (
+                <div key={runner.name} className="tip-runner-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 0' }}>
+                  <div className="tip-runner-identity" style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                    <span className="tip-runner-no">{runner.number}.</span>
+                    <a
+                      href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`View ${runner.name} in main app`}
+                    >
+                      {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
+                    </a>
+                    <span className="tip-runner-name" style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
+                    <span className="tip-runner-reasons" style={{ marginLeft: '6px', display: 'inline-flex', gap: '2px', verticalAlign: 'middle' }}>
+                      {runner.activeReasons.map(r => (
+                        <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
+                      ))}
+                    </span>
+                  </div>
+                  <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                    {displayOdds}{movement}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {untippedCount > 0 && (
+          <div className="untipped-footer" style={{ marginTop: tipRunners.length > 0 ? '10px' : '0' }}>
+            <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--detail-text-color)', opacity: 0.8, fontStyle: 'italic', marginBottom: '5px' }}>
+              {tipRunners.length > 0 
+                ? `${untippedCount} more horse${untippedCount !== 1 ? 's' : ''} run:` 
+                : `All ${untippedCount} runners:`}
+            </div>
+            <div className="untipped-horses-list">
+              {untippedHorses.map((runner) => {
                 const oddsArr = runner.odds || [];
                 const currentOdds = oddsArr[oddsArr.length - 1];
                 const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "x");
                 const movement = getMovementIndicator(oddsArr);
-                const reasons = Array.from(runner.reasons);
 
                 return (
-                  <div key={runner.name} className="tip-runner-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 0' }}>
-                    <div className="tip-runner-identity" style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
-                      <span className="tip-runner-no">{runner.number}.</span>
-                      <a
-                        href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={`View ${runner.name} in main app`}
-                      >
-                        {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
-                      </a>
-                      <span className="tip-runner-name" style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
-                      <span className="tip-runner-reasons" style={{ marginLeft: '6px', display: 'inline-flex', gap: '2px', verticalAlign: 'middle' }}>
-                        {reasons.map(r => (
-                          <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
-                        ))}
-                      </span>
+                  <div key={runner.name} className="untipped-runner-row" style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    padding: '1px 0', 
+                    fontSize: '0.75rem', 
+                    color: 'var(--detail-text-color)' 
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                      <span style={{ marginRight: '4px' }}>{runner.number}.</span>
+                      {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
+                      <span style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
                     </div>
-                    <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: 'normal', marginLeft: '10px', whiteSpace: 'nowrap' }}>
                       {displayOdds}{movement}
                     </span>
                   </div>
                 );
               })}
             </div>
-            {untippedCount > 0 && (
-              <div className="untipped-footer" style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-h)', marginTop: '10px', opacity: 0.6, fontStyle: 'italic' }}>
-                {untippedCount} more horse{untippedCount !== 1 ? 's' : ''} run
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="no-tips-msg">No shortlist runners found.</div>
+          </div>
+        )}
+
+        {tipRunners.length === 0 && untippedCount === 0 && (
+          <div className="no-tips-msg">No runners found.</div>
         )}
       </div>
     </div>
