@@ -7,7 +7,6 @@ import TipsSkeleton from './TipsSkeleton';
 import { useFilteredTips } from '../hooks/useFilteredTips';
 import FilterControls from './FilterControls';
 import { useTheme } from '../hooks/useTheme';
-import { getTopHorseForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
 
 // Import React DatePicker
 import DatePicker from "react-datepicker";
@@ -34,11 +33,7 @@ function Tips() {
 
   const { tips, loading, error, refresh, lastRefreshTime } = useFetchTips(selectedDate);
   const { theme, toggleTheme } = useTheme();
-  const [showHotTrainersOnly, setShowHotTrainersOnly] = useState(false);
-  const [oddsFilter, setOddsFilter] = useState(0); // 0 means no filter, 1-20 is max odds
-  const [minOddsFilter, setMinOddsFilter] = useState(0); // 0 means no filter, 5-20 is min odds
   const [selectedPlaces, setSelectedPlaces] = useState(new Set());
-  const [sortByAvg, setSortByAvg] = useState(false);
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
@@ -101,10 +96,6 @@ function Tips() {
 
   const filteredTips = useFilteredTips(tips, {
     selectedPlaces,
-    showHotTrainersOnly,
-    oddsFilter,
-    minOddsFilter,
-    sortByAvg,
     showUpcomingOnly,
     selectedDate,
     currentTime: filterReferenceTime
@@ -134,19 +125,11 @@ function Tips() {
           <details className="timeline-details">
             <summary className="timeline-summary">⏱️ {formattedTime}</summary>
             <FilterControls 
-              showHotTrainersOnly={showHotTrainersOnly}
-              setShowHotTrainersOnly={setShowHotTrainersOnly}
-              minOddsFilter={minOddsFilter}
-              setMinOddsFilter={setMinOddsFilter}
-              oddsFilter={oddsFilter}
-              setOddsFilter={setOddsFilter}
               theme={theme}
               toggleTheme={toggleTheme}
               uniquePlaces={uniquePlaces}
               selectedPlaces={selectedPlaces}
               togglePlace={togglePlace}
-              sortByAvg={sortByAvg}
-              setSortByAvg={setSortByAvg}
               showUpcomingOnly={showUpcomingOnly}
               setShowUpcomingOnly={setShowUpcomingOnly}
               isChatVisible={isChatVisible}
@@ -191,19 +174,11 @@ function Tips() {
         <details className="timeline-details">
           <summary className="timeline-summary">⏱️ {formattedTime}</summary>
           <FilterControls 
-            showHotTrainersOnly={showHotTrainersOnly}
-            setShowHotTrainersOnly={setShowHotTrainersOnly}
-            minOddsFilter={minOddsFilter}
-            setMinOddsFilter={setMinOddsFilter}
-            oddsFilter={oddsFilter}
-            setOddsFilter={setOddsFilter}
             theme={theme}
             toggleTheme={toggleTheme}
             uniquePlaces={uniquePlaces}
             selectedPlaces={selectedPlaces}
             togglePlace={togglePlace}
-            sortByAvg={sortByAvg}
-            setSortByAvg={setSortByAvg}
             showUpcomingOnly={showUpcomingOnly}
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
@@ -233,7 +208,6 @@ function Tips() {
                 key={`${race.time}-${race.place.replace(/\s+/g, '')}`} 
                 race={race} 
                 selectedDate={selectedDate}
-                sortByAvg={sortByAvg}
                 showUpcomingOnly={showUpcomingOnly}
               />
             ))}

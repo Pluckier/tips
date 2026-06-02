@@ -27,72 +27,93 @@ export const calculateAvgRating = (horse) => {
 };
 
 /**
- * Find the top horse based on current strategy (Hot Trainer/Peak vs Avg L3)
+ * Helper to calculate the rating from a horse's last run.
  */
-export const getTopHorseForRace = (race, sortByAvg = false) => {
-  const runners = (race.horses || []).filter(horse => {
-    const lastOdd = horse.odds?.[horse.odds.length - 1];
-    return lastOdd !== "null" && lastOdd !== "NR";
-  });
-
-  if (runners.length === 0) return null;
-
-  let pool = runners;
-  if (!sortByAvg) {
-    const hotTrainerRunners = runners.filter(horse => 
-      HOT_TRAINERS.some(hot => horse.trainer?.includes(hot)) ||
-      horse.owner?.startsWith("STAR")
-    );
-    if (hotTrainerRunners.length > 0) pool = hotTrainerRunners;
-  }
-
-  const scoringFn = sortByAvg ? calculateAvgRating : calculatePeakRating;
-  let topHorse = null;
-  let highestScore = -1;
-
-  pool.forEach(horse => {
-    const score = scoringFn(horse);
-    if (score > highestScore) {
-      highestScore = score;
-      topHorse = horse;
-    }
-  });
-  return topHorse;
+export const calculateLastRunRating = (horse) => {
+  const past = horse.past || [];
+  return past.length > 0 ? (parseFloat(past[0].name) || 0) : 0;
 };
 
 /**
- * Determines the NAP (best horse based on current strategy) and the Next Best horse for a given race.
- * The Next Best is the highest-rated horse among the remaining valid runners, excluding the NAP.
- * @param {object} race The race object.
- * @param {boolean} sortByAvg Strategy toggle flag.
- * @returns {{nap: object|null, nextBest: object|null}} An object containing the NAP and Next Best horses.
+ * Identifies runners for the "Shortlist" based on:
+ * 1. Top Trainer (HOT_TRAINERS list)
+ * 2. Top or Second Best Peak Rating (Past race 'name')
+ * 3. Favorite (Shortest odds)
+ * 4. Top or Second Best Average Rating (Last 3 runs or whatever is available)
+ * 5. Wildcard (Bottom rated horse based on Average Rating)
+ * 6. Top Last Run Rating (Most recent outing)
+ * 7. Horses with exactly 3 runs in a handicap race
  */
-export const getNapAndNextBestForRace = (race, sortByAvg = false) => {
-  const nap = getTopHorseForRace(race, sortByAvg); 
-
-  const allValidRunners = (race.horses || []).filter(horse => {
-    const lastOdd = horse.odds?.[horse.odds.length - 1];
+export const getTipRunnersForRace = (race) => {
+  const allRunners = (race.horses || []).filter(h => {
+    const lastOdd = h.odds?.[h.odds.length - 1];
     return lastOdd !== "null" && lastOdd !== "NR";
   });
 
-  // If no NAP or less than 2 valid runners, there cannot be a next best
-  if (!nap || allValidRunners.length < 2) {
-    return { nap, nextBest: null };
-  }
+  if (allRunners.length === 0) return [];
 
-  // Filter out the NAP from the list of all valid runners
-  const otherRunners = allValidRunners.filter(horse => horse !== nap);
+  const isHandicap = race.detail?.toLowerCase().includes('handicap');
 
-  const scoringFn = sortByAvg ? calculateAvgRating : calculatePeakRating;
+  // 1. Identify Favorite (Shortest Odds)
+  const sortedByOdds = [...allRunners].sort((a, b) => {
+    const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
+    const valB = parseFloat(b.odds?.[b.odds.length - 1]) || 999;
+    return valA - valB;
+  });
+  const favorite = sortedByOdds[0];
 
-  const nextBestCandidate = otherRunners
-    .map(horse => ({
-      horse,
-      score: scoringFn(horse)
-    }))
-    .sort((a, b) => b.score - a.score);
+  // 2. Identify Top 2 Rated (Peak)
+  const sortedByRating = [...allRunners].sort((a, b) => calculatePeakRating(b) - calculatePeakRating(a));
+  const topRated = sortedByRating[0];
+  const secondRated = sortedByRating[1];
 
-  const nextBest = nextBestCandidate.length > 0 ? nextBestCandidate[0].horse : null;
+  // 3. Identify Top 2 Rated (Average)
+  const sortedByAvg = [...allRunners].sort((a, b) => calculateAvgRating(b) - calculateAvgRating(a));
+  const topAvgRated = sortedByAvg[0];
+  const secondAvgRated = sortedByAvg[1];
+  
+  const wildcard = [...sortedByAvg].reverse().find(h => {
+    const lastOdd = parseFloat(h.odds?.[h.odds.length - 1]);
+    return !isNaN(lastOdd) && lastOdd <= 250;
+  });
 
-  return { nap, nextBest };
+  // 4. Identify Top Rated (Last Run)
+  const sortedByLast = [...allRunners].sort((a, b) => calculateLastRunRating(b) - calculateLastRunRating(a));
+  const topLastRated = sortedByLast[0];
+
+  // Map to store unique horses and their "reasons" for being tipped
+  const tipMap = new Map();
+
+  const addHorse = (horse, reason) => {
+    if (!horse) return;
+    if (!tipMap.has(horse.name)) {
+      tipMap.set(horse.name, { ...horse, reasons: new Set() });
+    }
+    tipMap.get(horse.name).reasons.add(reason);
+  };
+
+  // Apply Criteria
+  allRunners.forEach(h => {
+    const isHot = HOT_TRAINERS.some(hot => h.trainer?.includes(hot)) || h.owner?.startsWith("STAR");
+    if (isHot) addHorse(h, '🔥 Trainer');
+
+    if (isHandicap && (h.past || []).length === 3) {
+      addHorse(h, '🎯 H3');
+    }
+  });
+
+  addHorse(favorite, '✨ Fav');
+  addHorse(topRated, '📊 Rated');
+  if (secondRated) addHorse(secondRated, '📈 2nd');
+  addHorse(topAvgRated, '⭐ Avg');
+  if (secondAvgRated) addHorse(secondAvgRated, '🌟 A2');
+  addHorse(topLastRated, '🏃 Last');
+  addHorse(wildcard, '💀 Bottom');
+
+  return Array.from(tipMap.values()).sort((a, b) => {
+    const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
+    const valB = parseFloat(b.odds?.[b.odds.length - 1]) || 999;
+    if (valA !== valB) return valA - valB;
+    return a.number - b.number;
+  });
 };

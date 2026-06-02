@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { HOT_TRAINERS, getNapAndNextBestForRace, calculateAvgRating, calculatePeakRating } from '../utils/raceUtils';
+import { getTipRunnersForRace } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingOnly }) => {
+const TipCard = ({ race, selectedDate, showUpcomingOnly }) => {
   const [isVanishing, setIsVanishing] = useState(false);
-  const [localSortByAvg, setLocalSortByAvg] = useState(globalSortByAvg);
-
-  // Update local sort preference if the global one changes
-  useEffect(() => {
-    setLocalSortByAvg(globalSortByAvg);
-  }, [globalSortByAvg]);
 
   // Monitor the race time to trigger the "vanish" animation just before 
   // the parent component filters it out (at the 8 minute mark)
@@ -44,16 +38,13 @@ const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingO
   const formMatch = race.detail?.match(/FORM\s+(\d+)%/i);
   const formValue = formMatch ? formMatch[1] : '0';
 
-  // Get both the NAP and the Next Best horse for the race
-  const { nap, nextBest } = getNapAndNextBestForRace(race, localSortByAvg);
+  // Get the shortlisted runners based on new criteria
+  const tipRunners = getTipRunnersForRace(race);
 
-  const napOddsArr = nap?.odds || [];
-  const currentOdds = napOddsArr[napOddsArr.length - 1]; 
-  const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "N/A");
-
-  const nbOddsArr = nextBest?.odds || [];
-  const nbOdds = nbOddsArr[nbOddsArr.length - 1];
-  const displayNbOdds = nbOdds === "null" ? "NR" : (nbOdds || "N/A");
+  const untippedCount = (race.horses || []).filter(h => {
+    const lastOdd = h.odds?.[h.odds.length - 1];
+    return lastOdd !== "null" && lastOdd !== "NR";
+  }).length - tipRunners.length;
 
   const getMovementIndicator = (oddsArray) => {
     if (oddsArray.length < 2) return null;
@@ -71,88 +62,63 @@ const TipCard = ({ race, selectedDate, sortByAvg: globalSortByAvg, showUpcomingO
     );
   };
 
-  const napMovement = getMovementIndicator(napOddsArr);
-  const nbMovement = getMovementIndicator(nbOddsArr);
-
-  const napScore = nap ? (localSortByAvg ? calculateAvgRating(nap) : calculatePeakRating(nap)) : 0;
-
-  const isHotTrainer = nap && ( // This is fine, hot trainer status is not affected by sort strategy
-    HOT_TRAINERS.some(hot => nap.trainer?.includes(hot)) || 
-    nap.owner?.startsWith("STAR")
-  );
-
   return (
     <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
-      <div className="tip-header" onClick={() => setLocalSortByAvg(prev => !prev)} style={{ cursor: 'pointer' }} title="Click header to toggle rating strategy">
-        <div style={{ flex: 1 }}>
-          <div className="tip-header-top">
-            <span className="tip-time">{race.time}</span>
-            <span className="tip-place">{race.place}</span>
-          </div>
-          <div className="tip-race-info">{race.detail} • {race.horses?.length || 0} Runners</div>
-          {nap && (
-            <div className="tip-horse-header">
-              {nap.silks && (
-                <a
-                  href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`} // Assuming NAP is the one linked
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  title={`View ${nap.name} in ${race.place} at ${race.time}`}
-                >
-                  <img src={nap.silks} alt="silks" className="tip-silks-inline" />
-                </a>
-              )}
-              <span className="tip-horse-identity-group">
-                <span className="tip-horse-identity">
-                  {nap.number}. {nap.name} 
-                </span>
-                <div className="tip-odds-row">
-                  <span className="tip-odds-inline">{displayOdds}{napMovement}</span>
-                  <button
-                    className="tip-card-sort-toggle-btn"
-                    title={`Toggle between ${localSortByAvg ? 'Recent' : 'Highest'} strategy`}
-                  >
-                    📊 {localSortByAvg ? 'Recent' : 'Highest'}
-                  </button>
-                </div>
-              </span>
-            </div>
-          )}
+      <div className="tip-header">
+        <div className="tip-header-top">
+          <span className="tip-time">{race.time}</span>
+          <span className="tip-place">{race.place}</span>
         </div>
-        <div className="tip-header-right">
-          <span className="tip-form-percentage"> ({formValue}%)</span>
+        <div className="tip-race-info">
+          {race.detail} ({formValue}%)
         </div>
       </div>
-      <div className="tip-body">
-        {nap ? (
-          <>
-            <div className="tip-info"><strong>J:</strong> {nap.jockey}</div>
-            <div className="tip-info"><strong>T:</strong> {nap.trainer}</div>
-            <details className="tip-details">
-              <summary className="tip-summary">Pedigree & Owner</summary>
-              <div className="tip-info"><strong>Owner:</strong> {nap.owner}</div>
-              <div className="tip-info"><strong>Breeding:</strong> {nap.breeding}</div>
-              <div className="tip-info"><strong>Foaled:</strong> {nap.foaled}</div>
-            </details>
-            {isHotTrainer && <div className="tip-hot-match">🔥 HOT TRAINER MATCH</div>}
 
-            {nextBest && (
-              <>
-                <div className="tip-details" style={{ marginTop: '12px' }}></div>
-                <div className="tip-next-best">
-                  <span className="next-best-label">NB:</span>
-                  {nextBest.silks && <img src={nextBest.silks} alt="silks" className="tip-silks-inline-small" />}
-                  <span className="next-best-identity">
-                    {nextBest.number}. {nextBest.name} 
-                    <span className="tip-odds-inline-small"> {displayNbOdds}{nbMovement}</span>
-                  </span>
-                </div>
-              </>
+      <div className="tip-body">
+        {tipRunners.length > 0 ? (
+          <>
+            <div className="shortlist-container">
+              {tipRunners.map((runner) => {
+                const oddsArr = runner.odds || [];
+                const currentOdds = oddsArr[oddsArr.length - 1];
+                const displayOdds = currentOdds === "null" ? "NR" : (currentOdds || "x");
+                const movement = getMovementIndicator(oddsArr);
+                const reasons = Array.from(runner.reasons);
+
+                return (
+                  <div key={runner.name} className="tip-runner-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 0' }}>
+                    <div className="tip-runner-identity" style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                      <span className="tip-runner-no">{runner.number}.</span>
+                      <a
+                        href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`View ${runner.name} in main app`}
+                      >
+                        {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
+                      </a>
+                      <span className="tip-runner-name" style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
+                      <span className="tip-runner-reasons" style={{ marginLeft: '6px', display: 'inline-flex', gap: '2px', verticalAlign: 'middle' }}>
+                        {reasons.map(r => (
+                          <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
+                        ))}
+                      </span>
+                    </div>
+                    <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                      {displayOdds}{movement}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            {untippedCount > 0 && (
+              <div className="untipped-footer" style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-h)', marginTop: '10px', opacity: 0.6, fontStyle: 'italic' }}>
+                {untippedCount} more horse{untippedCount !== 1 ? 's' : ''} run
+              </div>
             )}
           </>
         ) : (
-          <div className="tip-detail">{race.detail}</div>
+          <div className="no-tips-msg">No shortlist runners found.</div>
         )}
       </div>
     </div>

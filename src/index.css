@@ -12,6 +12,7 @@
   --hot-match-text: #e53e3e;
   --hot-match-border: #feb2b2;
   --title-color: #1a3a5f;
+  --card-hover-border: var(--header-bg);
 }
 
 [data-theme='dark'] {
@@ -28,6 +29,7 @@
   --hot-match-text: #fca5a5;
   --hot-match-border: #7f1d1d;
   --title-color: #f1f5f9;
+  --card-hover-border: var(--detail-text-color);
 }
 
 body {
@@ -64,14 +66,14 @@ body {
   background: var(--container-bg);
   border-radius: 16px;
   box-shadow: 0 4px 20px var(--card-shadow);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: border-color 0.2s ease;
   border: 1px solid rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
 }
 
 .tip-card:hover {
-  transform: translateY(-10px);
+  border-color: var(--card-hover-border);
 }
 
 .tip-header-right {
