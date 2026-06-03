@@ -1,29 +1,35 @@
-# Racing Tips
+# Racing Info
 
-A modern, data-driven React application that analyzes daily racecards to identify high-value tips. The app automatically fetches the latest race data and applies sophisticated performance and market filters to highlight the most promising runners.
+A modern, data-driven React application that analyzes daily racecards to identify value. The app automatically fetches the latest race data and applies sophisticated performance and market filters to highlight the most promising runners.
 
 ## ✨ Key Features
 
-- **Dual Selection Strategies**:
-  - **Trainer/Peak (Default)**: Prioritizes runners from a "Hot Trainers" whitelist combined with their lifetime peak rating.
-  - **Average L3**: A form-consistency approach that selects the horse with the highest average rating across its last three runs.
-- **Primary (NAP) & Next Best (NB)**: Every race provides a top selection and a secondary alternative, allowing for more flexible betting or analysis.
-- **Dynamic Date Navigation**: Integrated React DatePicker allows users to jump to any specific date to analyze historical tips or upcoming cards.
-- **Quality Filtering (FORM > 50%)**: Automatically excludes low-confidence races where the FORM rating (extracted via regex from race details) is 50% or less.
-- **Advanced Market Filters**:
-  - **Min/Max Odds Sliders**: Dual sliders to refine selections. Find favorites by setting a low Max Odds, or hunt for outsiders by setting a high Min Odds.
-  - **Hot Trainer Toggle**: Instantly filter for horses trained by the most successful names in the industry.
+- **Symbol-Driven Filtering**: A comprehensive suite of toggleable icons representing specific data insights:
+  - ✨ Favourite | ⭐ Top Rated (3 Runs) | 🌟 2nd Rated (3 runs)
+  - 📊 Top Spike on chart | 📈 2nd Top Spike | 🏃 Only last run
+  - 🔥 Hot trainer | 💎 Massive spike | 🟣 Light Today
+  - 🚀 Improving | 🎯 Handicap newbie | 💀 Bottom rated
+- **Dynamic Shortlisting**: Horses are categorized based on active symbols. If all symbols for a horse are toggled off, they automatically move from the "Shortlist" to the "All Runners" section.
+- **🏆 Tricast Analysis**: Dedicated filter for high-value betting opportunities. Automatically identifies Handicap races with 8+ runners (including NRs) and displays a real-time badge count.
+- **🕒 Live Upcoming Tracking**: Filters out races that have already run (with an 8-minute grace period). Features a dynamic badge count that decrements as races go off.
+- **Optimized "App" Layout**: 
+  - **Fixed Header**: Date picker, timeline, and meeting filters stay pinned to the top.
+  - **Scrollable Card Area**: Only the race cards scroll, ensuring navigation is always accessible.
+  - **Mobile Responsive**: Uses fluid typography (`clamp`) and optimized padding for a native-app feel on small screens.
+- **Vanish Animation**: Visual "puff" feedback when a race is about to be filtered out of the upcoming view.
 - **Inter-App Integration**: 
   - **Deep-Linking**: Clicking a horse's silks instantly opens the corresponding race card in the main Racing App.
   - **Hash Synchronization**: URLs use a `#DATE@TIMEPLACE` format to ensure both apps stay perfectly in sync.
+- **Advanced Market Insights**:
+  - **Odds Movement**: Live indicators (▲/▼) showing market support or drift since the previous price update.
+  - **Hot Trainers**: Automated detection of runners from a curated `HOT_TRAINERS` whitelist.
 - **Rich Data Display**:
-  - **Horse Silks**: Dynamic image loading of racing silks for every runner.
-  - **Deep Pedigree**: View Owner, Breeding, and Foaled data alongside the Jockey and Trainer.
   - **Market Position**: Displays current decimal odds directly next to the horse name.
+  - **Tip Reasons**: Every shortlisted horse displays badges for the specific criteria that triggered the tip.
 - **Professional UI/UX**:
-  - **Theme Support**: Default Dark Mode with a high-contrast Light Mode toggle.
-  - **Persistence**: Remembers your theme and filter preferences across sessions using `localStorage`.
-- **Mobile Optimized**: A responsive grid system and centered modals provide a premium experience on any device.
+  - **Theme Support**: Integrated dark/light mode with a persistent `useTheme` hook.
+  - **Live Chat**: Collapsible `Chatter` modal for real-time discussion on the day's card.
+  - **Fullscreen Mode**: Toggleable fullscreen support for a distraction-free analysis experience.
 
 ## 🔗 Connected Apps
 
@@ -31,16 +37,9 @@ A modern, data-driven React application that analyzes daily racecards to identif
 
 ## 🚀 How it Works
 
-1. **Strategy Execution**: 
-   - **Peak Mode**: Validates runners against the `HOT_TRAINERS` list and scores them by their highest historic rating.
-   - **Average Mode**: Calculates the mean score of the three most recent runs for every valid runner.
-2. **Validation**: Market data is scanned to ensure selections are live runners (filtering out "NR" or "null" prices).
-
-## 🛠 Tech Stack
-
-- **Framework**: React 19 (Vite)
-- **Styling**: Modern CSS with CSS Variables (Theming)
-- **State Management**: React Hooks (`useState`, `useEffect`, `useMemo`)
+1. **Data Aggregation**: The app fetches live race data and calculates various metrics (Peak Ratings, Average L3, Weight Change, etc.).
+2. **Heuristic Labeling**: Every runner is evaluated against a set of 12 distinct criteria and assigned relevant symbols.
+3. **Market Validation**: Non-runners and "null" odds are automatically filtered out to ensure only active betting opportunities are presented.
 
 ## 💻 Development
 
