@@ -194,17 +194,6 @@ function Tips() {
     currentTime: filterReferenceTime
   });
 
-  // Apply Handicaps filter: Handicap, Class 1, or Nursery races
-  const handicapFilteredTips = useMemo(() => {
-    if (!showHandicapsOnly) return filteredTips;
-    return filteredTips.filter(race => {
-      const detail = race.detail?.toLowerCase() || '';
-      return detail.includes('handicap') || 
-             detail.includes('class 1') || 
-             detail.includes('nursery');
-    });
-  }, [filteredTips, showHandicapsOnly]);
-
   useEffect(() => {
     // If the "Upcoming" filter is hiding all results for a day that has data, turn it off automatically.
     if (!loading && tips.length > 0 && showUpcomingOnly && filteredTips.length === 0) {
@@ -214,8 +203,8 @@ function Tips() {
 
   // Order the filtered tips chronologically by race time
   const sortedTips = useMemo(() => {
-    return [...handicapFilteredTips].sort((a, b) => a.time.localeCompare(b.time));
-  }, [handicapFilteredTips]);
+    return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
+  }, [filteredTips]);
 
   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -340,7 +329,7 @@ function Tips() {
         <div className="tips-scroll-area">
           {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
-          {handicapFilteredTips.length === 0 ? (
+          {filteredTips.length === 0 ? (
             <p style={{ textAlign: 'center', marginTop: '40px', opacity: 0.7 }}>No tips available for today yet.</p>
           ) : (
             <div className="tips-grid">
@@ -351,6 +340,7 @@ function Tips() {
                   selectedDate={selectedDate}
                   showUpcomingOnly={showUpcomingOnly}
                   selectedSymbols={selectedSymbols}
+                  showHandicapsOnly={showHandicapsOnly}
                 />
               ))}
             </div>

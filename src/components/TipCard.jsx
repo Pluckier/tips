@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getTipRunnersForRace } from '../utils/raceUtils';
 
-const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
+const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHandicapsOnly }) => {
   const [isVanishing, setIsVanishing] = useState(false);
 
   // Monitor the race time to trigger the "vanish" animation just before 
@@ -98,8 +98,17 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
     );
   };
 
+  const isHandicapEligible = useMemo(() => {
+    const detail = race.detail?.toLowerCase() || '';
+    return detail.includes('handicap') || 
+           detail.includes('class 1') || 
+           detail.includes('nursery');
+  }, [race.detail]);
+
+  const isFaded = showHandicapsOnly && !isHandicapEligible;
+
   return (
-    <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
+    <div className={`tip-card ${isVanishing ? 'vanishing' : ''} ${isFaded ? 'faded' : ''}`}>
       <div className="tip-header">
         <div className="tip-header-top">
           <span className="tip-time">{race.time}</span>
