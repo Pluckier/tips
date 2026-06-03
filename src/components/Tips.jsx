@@ -65,7 +65,7 @@ function Tips() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [hasInitializedSymbols, setHasInitializedSymbols] = useState(false);
-  const [showHandicapsOnly, setShowHandicapsOnly] = useState(false);
+  const [showHandicapsOnly, setShowHandicapsOnly] = useState(true);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
@@ -107,7 +107,7 @@ function Tips() {
     setSelectedPlaces(new Set());
     setSelectedSymbols(new Set());
     setHasInitializedSymbols(false);
-    setShowHandicapsOnly(false);
+    setShowHandicapsOnly(true);
   }, [selectedDate]);
 
   const uniquePlaces = useMemo(() => {

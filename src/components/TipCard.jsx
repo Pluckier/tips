@@ -105,14 +105,15 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
            detail.includes('nursery');
   }, [race.detail]);
 
-  const isFaded = showHandicapsOnly && !isHandicapEligible;
+  const showWarning = showHandicapsOnly && !isHandicapEligible;
 
   return (
-    <div className={`tip-card ${isVanishing ? 'vanishing' : ''} ${isFaded ? 'faded' : ''}`}>
+    <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
       <div className="tip-header">
         <div className="tip-header-top">
           <span className="tip-time">{race.time}</span>
           <span className="tip-place">{race.place}</span>
+          {showWarning && <span style={{ marginLeft: '8px' }} title="Not a Handicap, Class 1, or Nursery">🚫</span>}
         </div>
         <div className="tip-race-info">
           {race.detail} ({race.going})
