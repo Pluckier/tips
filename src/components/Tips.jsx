@@ -400,7 +400,7 @@ function Tips() {
               borderTop: '1px solid var(--border-color)',
               opacity: 0.85
             }}>
-              <h4 style={{ margin: '0 0 16px 0', fontSize: '0.9rem', textAlign: 'center', color: 'var(--title-color)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <h4 style={{ margin: '0 0 16px 0', fontSize: '0.9rem', textAlign: 'center', color: 'var(--title-color)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>
                 Symbol Reference
               </h4>
               <div style={{ 
@@ -413,7 +413,7 @@ function Tips() {
                   <div key={sym} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '1.2rem', minWidth: '28px' }}>{sym}</span>
                     <span style={{ fontWeight: '700', color: 'var(--text-color)', minWidth: '20px' }}>{symbolCounts[sym]}</span>
-                    <span style={{ color: 'var(--detail-text-color)' }}>{SYMBOL_DESCRIPTIONS[sym]}</span>
+                    <span style={{ color: 'var(--detail-text-color)', fontWeight: '600' }}>{SYMBOL_DESCRIPTIONS[sym]}</span>
                   </div>
                 ))}
               </div>
