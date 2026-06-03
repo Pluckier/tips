@@ -65,7 +65,7 @@ function Tips() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [hasInitializedSymbols, setHasInitializedSymbols] = useState(false);
-  const [showTricastsOnly, setShowTricastsOnly] = useState(false);
+  const [showHandicapsOnly, setShowHandicapsOnly] = useState(false);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
@@ -107,7 +107,7 @@ function Tips() {
     setSelectedPlaces(new Set());
     setSelectedSymbols(new Set());
     setHasInitializedSymbols(false);
-    setShowTricastsOnly(false);
+    setShowHandicapsOnly(false);
   }, [selectedDate]);
 
   const uniquePlaces = useMemo(() => {
@@ -194,15 +194,16 @@ function Tips() {
     currentTime: filterReferenceTime
   });
 
-  // Apply Tricasts filter: Handicap races with 8+ runners (including NRs)
-  const tricastFilteredTips = useMemo(() => {
-    if (!showTricastsOnly) return filteredTips;
+  // Apply Handicaps filter: Handicap, Class 1, or Nursery races
+  const handicapFilteredTips = useMemo(() => {
+    if (!showHandicapsOnly) return filteredTips;
     return filteredTips.filter(race => {
-      const isHandicap = race.detail?.toLowerCase().includes('handicap');
-      const has8Runners = (race.horses || []).length >= 8;
-      return isHandicap && has8Runners;
+      const detail = race.detail?.toLowerCase() || '';
+      return detail.includes('handicap') || 
+             detail.includes('class 1') || 
+             detail.includes('nursery');
     });
-  }, [filteredTips, showTricastsOnly]);
+  }, [filteredTips, showHandicapsOnly]);
 
   useEffect(() => {
     // If the "Upcoming" filter is hiding all results for a day that has data, turn it off automatically.
@@ -213,8 +214,8 @@ function Tips() {
 
   // Order the filtered tips chronologically by race time
   const sortedTips = useMemo(() => {
-    return [...tricastFilteredTips].sort((a, b) => a.time.localeCompare(b.time));
-  }, [tricastFilteredTips]);
+    return [...handicapFilteredTips].sort((a, b) => a.time.localeCompare(b.time));
+  }, [handicapFilteredTips]);
 
   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -247,8 +248,8 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
-            showTricastsOnly={showTricastsOnly}
-            setShowTricastsOnly={setShowTricastsOnly}
+            showHandicapsOnly={showHandicapsOnly}
+            setShowHandicapsOnly={setShowHandicapsOnly}
           />
         </details>
 
@@ -316,8 +317,8 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
-            showTricastsOnly={showTricastsOnly}
-            setShowTricastsOnly={setShowTricastsOnly}
+            showHandicapsOnly={showHandicapsOnly}
+            setShowHandicapsOnly={setShowHandicapsOnly}
           />
         </details>
 
@@ -339,7 +340,7 @@ function Tips() {
         <div className="tips-scroll-area">
           {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
-          {tricastFilteredTips.length === 0 ? (
+          {handicapFilteredTips.length === 0 ? (
             <p style={{ textAlign: 'center', marginTop: '40px', opacity: 0.7 }}>No tips available for today yet.</p>
           ) : (
             <div className="tips-grid">

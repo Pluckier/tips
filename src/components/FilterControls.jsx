@@ -11,8 +11,8 @@ const FilterControls = ({
   setShowUpcomingOnly,
   isChatVisible,
   setIsChatVisible,
-  showTricastsOnly,
-  setShowTricastsOnly
+  showHandicapsOnly,
+  setShowHandicapsOnly
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
 
@@ -73,11 +73,11 @@ const FilterControls = ({
       {uniquePlaces.length > 0 && (
         <div className="place-filters-row">
           <button
-            onClick={() => setShowTricastsOnly(prev => !prev)}
-            className={`filter-toggle-btn ${showTricastsOnly ? 'active' : ''}`}
-            title="Show only handicap races with 8+ runners (including NRs)"
+            onClick={() => setShowHandicapsOnly(prev => !prev)}
+            className={`filter-toggle-btn ${showHandicapsOnly ? 'active' : ''}`}
+            title="Show only Handicaps, Class 1 or Nursery races"
           >
-            🏆 Tricasts
+            🏆 Handicaps
           </button>
           {uniquePlaces.map(place => (
             <button
