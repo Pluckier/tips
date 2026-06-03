@@ -118,25 +118,29 @@ function Tips() {
     return new Date(y, m - 1, d);
   }, [selectedDate]);
 
-  const uniqueSymbols = useMemo(() => {
-    const symbols = new Set();
+  const { uniqueSymbols, symbolCounts } = useMemo(() => {
+    const symbolSet = new Set();
+    const counts = {};
     tips.forEach(race => {
       const runners = getTipRunnersForRace(race);
       runners.forEach(runner => {
         if (runner.reasons) {
           Array.from(runner.reasons).forEach(reason => {
             const sym = reason.split(' ')[0];
-            if (sym) symbols.add(sym);
+            if (sym) {
+              symbolSet.add(sym);
+              counts[sym] = (counts[sym] || 0) + 1;
+            }
           });
         }
       });
     });
-    return [...symbols].sort((a, b) => {
+    const sorted = [...symbolSet].sort((a, b) => {
       const aIdx = PREFERRED_SYMBOL_ORDER.indexOf(a);
       const bIdx = PREFERRED_SYMBOL_ORDER.indexOf(b);
-      // Ensure unknown symbols (if any) are pushed to the end
       return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
     });
+    return { uniqueSymbols: sorted, symbolCounts: counts };
   }, [tips]);
 
   // Auto-select all symbols by default once they are discovered in the tips data
@@ -386,6 +390,33 @@ function Tips() {
                   selectedSymbols={selectedSymbols}
                 />
               ))}
+            </div>
+          )}
+
+          {uniqueSymbols.length > 0 && (
+            <div className="symbol-reference-legend" style={{ 
+              marginTop: '60px', 
+              padding: '24px 10px', 
+              borderTop: '1px solid var(--border-color)',
+              opacity: 0.85
+            }}>
+              <h4 style={{ margin: '0 0 16px 0', fontSize: '0.9rem', textAlign: 'center', color: 'var(--title-color)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Symbol Reference
+              </h4>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                gap: '12px',
+                fontSize: '0.75rem'
+              }}>
+                {uniqueSymbols.map(sym => (
+                  <div key={sym} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem', minWidth: '28px' }}>{sym}</span>
+                    <span style={{ fontWeight: '700', color: 'var(--text-color)', minWidth: '20px' }}>{symbolCounts[sym]}</span>
+                    <span style={{ color: 'var(--detail-text-color)' }}>{SYMBOL_DESCRIPTIONS[sym]}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
