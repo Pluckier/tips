@@ -13,7 +13,8 @@ const FilterControls = ({
   setIsChatVisible,
   showTricastsOnly,
   setShowTricastsOnly,
-  tricastCount
+  tricastCount,
+  upcomingCount
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
 
@@ -53,7 +54,7 @@ const FilterControls = ({
           className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}
           title="Show only races that haven't run yet"
         >
-          🕒 Upcoming
+          🕒 Upcoming {upcomingCount > 0 && <span className="filter-badge">{upcomingCount}</span>}
         </button>
         <button
           onClick={toggleFullscreen}

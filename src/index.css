@@ -275,6 +275,19 @@ body {
   white-space: nowrap;
 }
 
+.filter-badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .filter-toggle-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

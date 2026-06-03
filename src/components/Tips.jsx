@@ -187,6 +187,33 @@ function Tips() {
     currentTime: filterReferenceTime
   });
 
+  // Calculate upcoming races count based on current meeting and tricast filters
+  const upcomingCount = useMemo(() => {
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    
+    // Start with races filtered by place (meeting)
+    let list = tips.filter(race => selectedPlaces.size === 0 || selectedPlaces.has(race.place));
+    
+    // If Tricasts filter is active, we only count upcoming tricasts
+    if (showTricastsOnly) {
+      list = list.filter(race => {
+        const isHandicap = race.detail?.toLowerCase().includes('handicap');
+        return isHandicap && (race.horses || []).length >= 8;
+      });
+    }
+
+    if (selectedDate < todayStr) return 0;
+    if (selectedDate > todayStr) return list.length;
+
+    const refH = filterReferenceTime.getHours();
+    const refM = filterReferenceTime.getMinutes();
+    return list.filter(r => {
+      const [h, m] = r.time.split(':').map(Number);
+      return h > refH || (h === refH && m >= refM);
+    }).length;
+  }, [tips, selectedPlaces, showTricastsOnly, selectedDate, filterReferenceTime]);
+
   // Calculate how many races match the tricast criteria (Handicap + 8+ runners)
   const tricastCount = useMemo(() => {
     return filteredTips.filter(race => {
@@ -252,6 +279,7 @@ function Tips() {
             showTricastsOnly={showTricastsOnly}
             setShowTricastsOnly={setShowTricastsOnly}
             tricastCount={tricastCount}
+            upcomingCount={upcomingCount}
           />
         </details>
 
@@ -323,6 +351,7 @@ function Tips() {
             showTricastsOnly={showTricastsOnly}
             setShowTricastsOnly={setShowTricastsOnly}
             tricastCount={tricastCount}
+            upcomingCount={upcomingCount}
           />
         </details>
 
