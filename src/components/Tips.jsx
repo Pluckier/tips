@@ -63,6 +63,7 @@ function Tips() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [hasInitializedSymbols, setHasInitializedSymbols] = useState(false);
+  const [showTricastsOnly, setShowTricastsOnly] = useState(false);
 
   // Heartbeat to trigger re-renders for the "Upcoming" filter
   useEffect(() => {
@@ -104,6 +105,7 @@ function Tips() {
     setSelectedPlaces(new Set());
     setSelectedSymbols(new Set());
     setHasInitializedSymbols(false);
+    setShowTricastsOnly(false);
   }, [selectedDate]);
 
   const uniquePlaces = useMemo(() => {
@@ -185,6 +187,25 @@ function Tips() {
     currentTime: filterReferenceTime
   });
 
+  // Calculate how many races match the tricast criteria (Handicap + 8+ runners)
+  const tricastCount = useMemo(() => {
+    return filteredTips.filter(race => {
+      const isHandicap = race.detail?.toLowerCase().includes('handicap');
+      const has8Runners = (race.horses || []).length >= 8;
+      return isHandicap && has8Runners;
+    }).length;
+  }, [filteredTips]);
+
+  // Apply Tricasts filter: Handicap races with 8+ runners (including NRs)
+  const tricastFilteredTips = useMemo(() => {
+    if (!showTricastsOnly) return filteredTips;
+    return filteredTips.filter(race => {
+      const isHandicap = race.detail?.toLowerCase().includes('handicap');
+      const has8Runners = (race.horses || []).length >= 8;
+      return isHandicap && has8Runners;
+    });
+  }, [filteredTips, showTricastsOnly]);
+
   useEffect(() => {
     // If the "Upcoming" filter is hiding all results for a day that has data, turn it off automatically.
     if (!loading && tips.length > 0 && showUpcomingOnly && filteredTips.length === 0) {
@@ -194,8 +215,8 @@ function Tips() {
 
   // Order the filtered tips chronologically by race time
   const sortedTips = useMemo(() => {
-    return [...filteredTips].sort((a, b) => a.time.localeCompare(b.time));
-  }, [filteredTips]);
+    return [...tricastFilteredTips].sort((a, b) => a.time.localeCompare(b.time));
+  }, [tricastFilteredTips]);
 
   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -228,6 +249,9 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
+            showTricastsOnly={showTricastsOnly}
+            setShowTricastsOnly={setShowTricastsOnly}
+            tricastCount={tricastCount}
           />
         </details>
 
@@ -296,6 +320,9 @@ function Tips() {
             setShowUpcomingOnly={setShowUpcomingOnly}
             isChatVisible={isChatVisible}
             setIsChatVisible={setIsChatVisible}
+            showTricastsOnly={showTricastsOnly}
+            setShowTricastsOnly={setShowTricastsOnly}
+            tricastCount={tricastCount}
           />
         </details>
 
@@ -317,7 +344,7 @@ function Tips() {
         <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
           {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
-          {filteredTips.length === 0 ? (
+          {tricastFilteredTips.length === 0 ? (
             <p style={{ textAlign: 'center', marginTop: '40px', opacity: 0.7 }}>No tips available for today yet.</p>
           ) : (
             <div className="tips-grid">
