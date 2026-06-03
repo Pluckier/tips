@@ -208,7 +208,23 @@ export const getTipRunnersForRace = (race) => {
 
   const topPeak = calculatePeakRating(topRated);
   const secondPeak = secondRated ? calculatePeakRating(secondRated) : 0;
-  if (topPeak > 0 && topPeak >= (secondPeak * 2)) {
+
+  // Check distance beaten for the highest-rated run to ensure the "Spike" was competitive
+  const peakRun = (topRated.past || []).find(p => parseFloat(p.name) === topPeak);
+  const peakPos = peakRun ? parseInt(peakRun.position?.toString().split('/')[0], 10) : 0;
+  let peakDistValid = peakPos === 1;
+  if (peakRun && !peakDistValid && peakRun.distBeaten) {
+    const db = peakRun.distBeaten.toString().toLowerCase().trim();
+    const abbrev = ['shd', 'hd', 'nk', 'ns', 'dh'];
+    if (abbrev.includes(db)) {
+      peakDistValid = true;
+    } else {
+      const dNum = parseFloat(db);
+      peakDistValid = !isNaN(dNum) && dNum < 2;
+    }
+  }
+
+  if (topPeak > 0 && topPeak > (secondPeak * 1.9) && peakDistValid) {
     addHorse(topRated, '💎 Massive spike');
   }
 

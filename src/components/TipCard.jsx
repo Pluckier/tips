@@ -42,13 +42,22 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
   const allTipRunners = getTipRunnersForRace(race);
   const tipRunners = useMemo(() => {
     return allTipRunners.map(runner => {
-      // Filter out reasons/symbols that are currently toggled off
-      const activeReasons = Array.from(runner.reasons).filter(r => 
+      const reasonsArray = Array.from(runner.reasons);
+      const activeReasons = reasonsArray.filter(r => 
         selectedSymbols.has(r.split(' ')[0])
       );
+
       // If no symbols are left active for this horse, it's no longer a 'tipped' horse
       if (activeReasons.length === 0) return null;
-      return { ...runner, activeReasons };
+
+      return { 
+        ...runner, 
+        displayReasons: reasonsArray.map(r => ({
+          text: r,
+          symbol: r.split(' ')[0],
+          isActive: selectedSymbols.has(r.split(' ')[0])
+        }))
+      };
     }).filter(Boolean);
   }, [allTipRunners, selectedSymbols]);
 
@@ -57,14 +66,20 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
     return lastOdd !== "null" && lastOdd !== "NR";
   });
 
-  const untippedHorses = allValidRunners
-    .filter(validRunner => !tipRunners.some(tippedRunner => tippedRunner.name === validRunner.name))
-    .sort((a, b) => {
-      const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
-      const valB = parseFloat(b.odds?.[b.odds.length - 1]) || 999;
-      if (valA !== valB) return valA - valB;
-      return a.number - b.number;
-    });
+  const untippedHorses = useMemo(() => {
+    return allValidRunners
+      .filter(validRunner => !tipRunners.some(tippedRunner => tippedRunner.name === validRunner.name))
+      .map(runner => {
+        const originalTip = allTipRunners.find(t => t.name === runner.name);
+        return originalTip ? { ...runner, allReasons: Array.from(originalTip.reasons) } : runner;
+      })
+      .sort((a, b) => {
+        const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
+        const valB = parseFloat(b.odds?.[b.odds.length - 1]) || 999;
+        if (valA !== valB) return valA - valB;
+        return a.number - b.number;
+      });
+  }, [allValidRunners, tipRunners, allTipRunners]);
   const untippedCount = untippedHorses.length;
 
   const getMovementIndicator = (oddsArray) => {
@@ -118,8 +133,15 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
                     </a>
                     <span className="tip-runner-name" style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
                     <span className="tip-runner-reasons" style={{ marginLeft: '6px', display: 'inline-flex', gap: '2px', verticalAlign: 'middle' }}>
-                      {runner.activeReasons.map(r => (
-                        <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
+                        {runner.displayReasons.map(r => (
+                          <span 
+                            key={r.text} 
+                            className="tip-reason-tag" 
+                            title={r.text}
+                            style={{ opacity: r.isActive ? 1 : 0.4 }}
+                          >
+                            {r.symbol}
+                          </span>
                       ))}
                     </span>
                   </div>
@@ -159,6 +181,13 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols }) => {
                       <span style={{ marginRight: '4px' }}>{runner.number}.</span>
                       {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
                       <span style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
+                          {runner.allReasons && (
+                            <span style={{ display: 'inline-flex', gap: '2px', marginLeft: '4px', opacity: 0.5 }}>
+                              {runner.allReasons.map(r => (
+                                <span key={r} className="tip-reason-tag" title={r} style={{ fontSize: '0.8em' }}>{r.split(' ')[0]}</span>
+                              ))}
+                            </span>
+                          )}
                     </div>
                     <span style={{ fontWeight: 'normal', marginLeft: '10px', whiteSpace: 'nowrap' }}>
                       {displayOdds}{movement}
