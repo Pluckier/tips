@@ -24,6 +24,9 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
   </h2>
 ));
 
+// These symbols will be enabled by default on load
+const DEFAULT_ENABLED_SYMBOLS = ['👑', '⭐', '🌟', '📊', '📈', '🏃'];
+
 const SYMBOL_DESCRIPTIONS = {
   '👑': 'Favourite',
   '⭐': 'Top Rated (3 Runs)',
@@ -134,18 +137,19 @@ function Tips() {
         }
       });
     });
-    const sorted = [...symbolSet].sort((a, b) => {
+    const uniqueSymbols = [...symbolSet].sort((a, b) => {
       const aIdx = PREFERRED_SYMBOL_ORDER.indexOf(a);
       const bIdx = PREFERRED_SYMBOL_ORDER.indexOf(b);
       return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
     });
-    return { uniqueSymbols: sorted, symbolCounts: counts };
+    return { uniqueSymbols, symbolCounts: counts };
   }, [tips]);
 
-  // Auto-select all symbols by default once they are discovered in the tips data
+  // Auto-select specific symbols by default once they are discovered in the tips data
   useEffect(() => {
     if (!loading && tips.length > 0 && uniqueSymbols.length > 0 && !hasInitializedSymbols) {
-      setSelectedSymbols(new Set(uniqueSymbols));
+      const initialSelection = uniqueSymbols.filter(sym => DEFAULT_ENABLED_SYMBOLS.includes(sym));
+      setSelectedSymbols(new Set(initialSelection));
       setHasInitializedSymbols(true);
     }
   }, [loading, tips, uniqueSymbols, hasInitializedSymbols]);
@@ -189,42 +193,6 @@ function Tips() {
     selectedDate,
     currentTime: filterReferenceTime
   });
-
-  // Calculate upcoming races count based on current meeting and tricast filters
-  const upcomingCount = useMemo(() => {
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    
-    // Start with races filtered by place (meeting)
-    let list = tips.filter(race => selectedPlaces.size === 0 || selectedPlaces.has(race.place));
-    
-    // If Tricasts filter is active, we only count upcoming tricasts
-    if (showTricastsOnly) {
-      list = list.filter(race => {
-        const isHandicap = race.detail?.toLowerCase().includes('handicap');
-        return isHandicap && (race.horses || []).length >= 8;
-      });
-    }
-
-    if (selectedDate < todayStr) return 0;
-    if (selectedDate > todayStr) return list.length;
-
-    const refH = filterReferenceTime.getHours();
-    const refM = filterReferenceTime.getMinutes();
-    return list.filter(r => {
-      const [h, m] = r.time.split(':').map(Number);
-      return h > refH || (h === refH && m >= refM);
-    }).length;
-  }, [tips, selectedPlaces, showTricastsOnly, selectedDate, filterReferenceTime]);
-
-  // Calculate how many races match the tricast criteria (Handicap + 8+ runners)
-  const tricastCount = useMemo(() => {
-    return filteredTips.filter(race => {
-      const isHandicap = race.detail?.toLowerCase().includes('handicap');
-      const has8Runners = (race.horses || []).length >= 8;
-      return isHandicap && has8Runners;
-    }).length;
-  }, [filteredTips]);
 
   // Apply Tricasts filter: Handicap races with 8+ runners (including NRs)
   const tricastFilteredTips = useMemo(() => {
@@ -281,8 +249,6 @@ function Tips() {
             setIsChatVisible={setIsChatVisible}
             showTricastsOnly={showTricastsOnly}
             setShowTricastsOnly={setShowTricastsOnly}
-            tricastCount={tricastCount}
-            upcomingCount={upcomingCount}
           />
         </details>
 
@@ -352,8 +318,6 @@ function Tips() {
             setIsChatVisible={setIsChatVisible}
             showTricastsOnly={showTricastsOnly}
             setShowTricastsOnly={setShowTricastsOnly}
-            tricastCount={tricastCount}
-            upcomingCount={upcomingCount}
           />
         </details>
 
