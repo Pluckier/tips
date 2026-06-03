@@ -18,7 +18,6 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
   <h2 
     onClick={onClick} 
     ref={ref} 
-    style={{ cursor: 'pointer', fontSize: 'clamp(1.1rem, 5vw, 1.5rem)', margin: '10px 0' }} 
     title="Click to change date"
   >
     Racing Info: {value} 📅
@@ -257,7 +256,7 @@ function Tips() {
 
     if (error) {
       return (
-        <div className="tips-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <div className="tips-container">
           <div className="tips-header-section">
             <DatePicker
               selected={pickerDate}
@@ -302,7 +301,7 @@ function Tips() {
           </div>
         )}
           
-          <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
+          <div className="tips-scroll-area">
             <div className="tips-error-content">
               <div className="tips-error-card">
                 <h3>No Data Available</h3>
@@ -316,7 +315,6 @@ function Tips() {
                     setSelectedDate(`${y}-${m}-${d}`);
                   }} 
                   className="filter-toggle-btn active"
-                  style={{ marginTop: '20px', padding: '12px 24px', fontSize: '1rem' }}
                 >
                   📅 Get Today's Tips...
                 </button>
@@ -328,7 +326,7 @@ function Tips() {
     }
 
     return (
-      <div className="tips-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <div className="tips-container">
         <div className="tips-header-section">
           <DatePicker
             selected={pickerDate}
@@ -374,7 +372,7 @@ function Tips() {
           </div>
         )}
 
-        <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
+        <div className="tips-scroll-area">
           {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
           {tricastFilteredTips.length === 0 ? (
@@ -394,26 +392,16 @@ function Tips() {
           )}
 
           {uniqueSymbols.length > 0 && (
-            <div className="symbol-reference-legend" style={{ 
-              marginTop: '60px', 
-              padding: '24px 10px', 
-              borderTop: '1px solid var(--border-color)',
-              opacity: 0.85
-            }}>
-              <h4 style={{ margin: '0 0 16px 0', fontSize: '0.9rem', textAlign: 'center', color: 'var(--title-color)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>
+            <div className="symbol-reference-legend">
+              <h4>
                 Symbol Reference
               </h4>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-                gap: '12px',
-                fontSize: '0.75rem'
-              }}>
+              <div className="symbol-reference-grid">
                 {uniqueSymbols.map(sym => (
-                  <div key={sym} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem', minWidth: '28px' }}>{sym}</span>
-                    <span style={{ fontWeight: '700', color: 'var(--text-color)', minWidth: '20px' }}>{symbolCounts[sym]}</span>
-                    <span style={{ color: 'var(--detail-text-color)', fontWeight: '600' }}>{SYMBOL_DESCRIPTIONS[sym]}</span>
+                  <div key={sym} className="symbol-reference-item">
+                    <span className="symbol-reference-icon">{sym}</span>
+                    <span className="symbol-reference-count">{symbolCounts[sym]}</span>
+                    <span className="symbol-reference-label">{SYMBOL_DESCRIPTIONS[sym]}</span>
                   </div>
                 ))}
               </div>
