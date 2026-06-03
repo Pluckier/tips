@@ -25,7 +25,7 @@ const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
 ));
 
 const SYMBOL_DESCRIPTIONS = {
-  '✨': 'Favourite',
+  '👑': 'Favourite',
   '⭐': 'Top Rated (3 Runs)',
   '🌟': '2nd Rated (3 runs)',
   '📊': 'Top Spike on chart',
@@ -40,7 +40,7 @@ const SYMBOL_DESCRIPTIONS = {
 };
 
 // Define the exact order requested for the toggle buttons
-const PREFERRED_SYMBOL_ORDER = ['✨', '⭐', '🌟', '📊', '📈', '🏃', '🔥', '💎', '🟣', '🚀', '🎯', '💀'];
+const PREFERRED_SYMBOL_ORDER = ['👑', '⭐', '🌟', '📊', '📈', '🏃', '🔥', '💎', '🟣', '🚀', '🎯', '💀'];
 
 //  SET TO 'false' TO DISABLE AUTH GUARD
 const AUTH_ACTIVE = false;

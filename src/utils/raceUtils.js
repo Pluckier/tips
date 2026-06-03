@@ -203,7 +203,7 @@ export const getTipRunnersForRace = (race) => {
     }
   });
 
-  addHorse(favorite, '✨ Favourite');
+  addHorse(favorite, '👑 Favourite');
   addHorse(topRated, '📊 Top Spike on chart');
 
   const topPeak = calculatePeakRating(topRated);

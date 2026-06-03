@@ -5,7 +5,7 @@ A modern, data-driven React application that analyzes daily racecards to identif
 ## ✨ Key Features
 
 - **Symbol-Driven Filtering**: A comprehensive suite of toggleable icons representing specific data insights:
-  - ✨ Favourite | ⭐ Top Rated (3 Runs) | 🌟 2nd Rated (3 runs)
+  - 👑 Favourite | ⭐ Top Rated (3 Runs) | 🌟 2nd Rated (3 runs)
   - 📊 Top Spike on chart | 📈 2nd Top Spike | 🏃 Only last run
   - 🔥 Hot trainer | 💎 Massive spike | 🟣 Light Today
   - 🚀 Improving | 🎯 Handicap newbie | 💀 Bottom rated
