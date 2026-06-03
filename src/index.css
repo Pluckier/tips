@@ -43,7 +43,7 @@ body {
 .tips-container {
   max-width: 1200px;
   margin: 20px auto;
-  padding: 0 20px;
+  padding: 0 0px;
 }
 
 .tips-container h2 {
@@ -135,7 +135,7 @@ body {
   color: var(--header-text);
   border-radius: 16px 16px 0 0;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: flex-start;
 }
 
@@ -247,7 +247,7 @@ body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 1px;
   margin: 10px 0 20px 0;
 }
 

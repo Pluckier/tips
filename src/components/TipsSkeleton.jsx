@@ -22,8 +22,8 @@ const TipsSkeleton = ({ selectedDate }) => {
       <div className="tips-header-actions" style={{ visibility: 'hidden' }}>
         <button className="theme-toggle-btn">🌙 Dark Mode</button>
       </div>
-      <h2>Racing Info: {displayDate} 📅</h2>
-      <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+      <h2 style={{ fontSize: 'clamp(1.1rem, 5vw, 1.5rem)', margin: '10px 0' }}>Racing Info: {displayDate} 📅</h2>
+      <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
         <div className="tips-grid">
           {[...Array(6)].map((_, i) => (
             <TipCardSkeleton key={i} />

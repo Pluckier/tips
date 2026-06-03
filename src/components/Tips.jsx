@@ -15,7 +15,12 @@ import "react-datepicker/dist/react-datepicker.css";
 
 // A custom header to trigger the picker, keeping your 📅 style
 const CustomDateHeader = React.forwardRef(({ value, onClick }, ref) => (
-  <h2 onClick={onClick} ref={ref} style={{ cursor: 'pointer' }} title="Click to change date">
+  <h2 
+    onClick={onClick} 
+    ref={ref} 
+    style={{ cursor: 'pointer', fontSize: 'clamp(1.1rem, 5vw, 1.5rem)', margin: '10px 0' }} 
+    title="Click to change date"
+  >
     Racing Info: {value} 📅
   </h2>
 ));
@@ -241,7 +246,7 @@ function Tips() {
           </div>
         )}
           
-          <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+          <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
             <div className="tips-error-content">
               <div className="tips-error-card">
                 <h3>No Data Available</h3>
@@ -309,7 +314,7 @@ function Tips() {
           </div>
         )}
 
-        <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 10px 120px 10px' }}>
+        <div className="tips-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '10px 4px 120px 4px' }}>
           {isChatVisible && <Chatter onClose={() => setIsChatVisible(false)} />}
 
           {filteredTips.length === 0 ? (
