@@ -98,25 +98,27 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     );
   };
 
-  const raceIndicator = useMemo(() => {
-    if (!showHandicapsOnly) return null;
+  const raceIndicators = useMemo(() => {
+    if (!showHandicapsOnly) return [];
 
     const detail = race.detail?.toLowerCase() || '';
     const runnerCount = (race.horses || []).length;
     const isHandicapOrNursery = detail.includes('handicap') || detail.includes('nursery');
     const isClass1 = detail.includes('class 1');
 
-    if (isClass1) return { symbol: '👑', title: 'Class 1 Race' };
+    const indicators = [];
+
+    if (isClass1) indicators.push({ symbol: '👑', title: 'Class 1 Race' });
+    if (isHandicapOrNursery) indicators.push({ symbol: '⚖️', title: 'Handicap Race' });
     if (isHandicapOrNursery && runnerCount >= 8) {
-      return { symbol: '⚖️🏆', title: 'Tricast Race (8+ Runners)' };
+      indicators.push({ symbol: '🏆', title: 'Tricast Race (8+ Runners)' });
     }
-    if (isHandicapOrNursery && runnerCount < 8) {
-      return { symbol: '⚖️', title: 'Handicap Race' };
+
+    if (indicators.length === 0) {
+      indicators.push({ symbol: '🚫', title: 'Not a Handicap, Class 1, or Nursery' });
     }
-    if (!isHandicapOrNursery) {
-      return { symbol: '🚫', title: 'Not a Handicap, Class 1, or Nursery' };
-    }
-    return null;
+
+    return indicators;
   }, [race.detail, race.horses, showHandicapsOnly]);
 
   return (
@@ -127,11 +129,13 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
             <span className="tip-time">{race.time}</span>
             <span className="tip-place">{race.place}</span>
           </div>
-          {raceIndicator && (
-            <span title={raceIndicator.title}>
-              {raceIndicator.symbol}
-            </span>
-          )}
+          <div className="tip-header-badges">
+            {raceIndicators.map((indicator, idx) => (
+              <span key={idx} title={indicator.title} style={{ marginLeft: '6px' }}>
+                {indicator.symbol}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="tip-race-info">
           {race.detail} ({race.going})

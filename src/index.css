@@ -617,3 +617,8 @@ body {
   color: var(--detail-text-color); 
   font-weight: 600;
 }
+
+.tip-header-badges {
+  display: flex;
+  align-items: center;
+}
