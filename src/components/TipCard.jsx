@@ -87,15 +87,9 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     const cur = parseFloat(oddsArray[oddsArray.length - 1]);
     const prev = parseFloat(oddsArray[oddsArray.length - 2]);
     if (isNaN(cur) || isNaN(prev)) return null;
-    if (cur > prev) return (
-      <span style={{ color: '#3b82f6', marginLeft: '4px', fontSize: '0.85em', fontWeight: 'bold' }}>▼</span>
-    );
-    if (cur < prev) return (
-      <span style={{ color: '#ef4444', marginLeft: '4px', fontSize: '0.85em', fontWeight: 'bold' }}>▲</span>
-    );
-    return (
-      <span style={{ color: 'var(--text-h)', marginLeft: '4px', fontSize: '0.85em', opacity: 0.5 }}>~</span>
-    );
+    if (cur > prev) return <span className="movement-down">▼</span>;
+    if (cur < prev) return <span className="movement-up">▲</span>;
+    return <span className="movement-stable">~</span>;
   };
 
   const raceIndicators = useMemo(() => {
@@ -152,8 +146,8 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
               const movement = getMovementIndicator(oddsArr);
 
               return (
-                <div key={runner.name} className="tip-runner-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 0' }}>
-                  <div className="tip-runner-identity" style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                <div key={runner.name} className="tip-runner-row">
+                  <div className="tip-runner-identity">
                     <span className="tip-runner-no">{runner.number}.</span>
                     <a
                       href={`https://pluckier.github.io/racing/#${selectedDate}@${race.time}${race.place.replace(/\s+/g, '')}`}
@@ -163,8 +157,8 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                     >
                       {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
                     </a>
-                    <span className="tip-runner-name" style={{ margin: '0 0px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
-                    <span className="tip-runner-reasons" style={{ marginLeft: '2px', display: 'inline-flex', gap: '0px', verticalAlign: 'middle' }}>
+                    <span className="tip-runner-name">{runner.name}</span>
+                    <span className="tip-runner-reasons">
                         {runner.displayReasons.map(r => (
                           <span 
                             key={r.text} 
@@ -177,7 +171,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                       ))}
                     </span>
                   </div>
-                  <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '3px', whiteSpace: 'nowrap' }}>
+                  <span className="tip-runner-odds">
                     {displayOdds}{movement}
                   </span>
                 </div>
@@ -188,7 +182,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
 
         {untippedCount > 0 && (
           <div className="untipped-footer" style={{ marginTop: tipRunners.length > 0 ? '10px' : '0' }}>
-            <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--detail-text-color)', opacity: 0.8, fontStyle: 'italic', marginBottom: '5px' }}>
+            <div className="untipped-header-text">
               {tipRunners.length > 0 
                 ? `${untippedCount} more horse${untippedCount !== 1 ? 's' : ''} run:` 
                 : `All ${untippedCount} runners:`}
@@ -201,27 +195,20 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                 const movement = getMovementIndicator(oddsArr);
 
                 return (
-                  <div key={runner.name} className="untipped-runner-row" style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between', 
-                    padding: '1px 0', 
-                    fontSize: '0.75rem', 
-                    color: 'var(--detail-text-color)' 
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden' }}>
-                      <span style={{ marginRight: '4px' }}>{runner.number}.</span>
+                  <div key={runner.name} className="untipped-runner-row">
+                    <div className="untipped-runner-identity">
+                      <span className="untipped-runner-no">{runner.number}.</span>
                       {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
-                      <span style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
+                      <span className="untipped-runner-name">{runner.name}</span>
                           {runner.allReasons && (
-                            <span style={{ display: 'inline-flex', gap: '2px', marginLeft: '4px', opacity: 0.5 }}>
+                            <span className="untipped-runner-potential-symbols">
                               {runner.allReasons.map(r => (
-                                <span key={r} className="tip-reason-tag" title={r} style={{ fontSize: '0.8em' }}>{r.split(' ')[0]}</span>
+                                <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
                               ))}
                             </span>
                           )}
                     </div>
-                    <span style={{ fontWeight: 'normal', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                    <span className="untipped-runner-odds">
                       {displayOdds}{movement}
                     </span>
                   </div>

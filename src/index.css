@@ -634,9 +634,9 @@ body {
 .tip-runner-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 0; }
 .tip-runner-identity { display: flex; align-items: center; flex-wrap: nowrap; overflow: hidden; }
 .tip-runner-no { font-size: 0.9rem; opacity: 0.7; }
-.tip-runner-name { margin: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
-.tip-runner-reasons { margin-left: 6px; display: inline-flex; gap: 2px; vertical-align: middle; }
-.tip-runner-odds { font-weight: bold; margin-left: 10px; white-space: nowrap; }
+.tip-runner-name { margin: 0 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.tip-runner-reasons { margin-left: 2px; display: inline-flex; gap: 0px; vertical-align: middle; }
+.tip-runner-odds { font-weight: bold; margin-left: 3px; white-space: nowrap; }
 
 /* Movement Indicators */
 .movement-up { color: #ef4444; margin-left: 4px; font-size: 0.85em; font-weight: bold; }
