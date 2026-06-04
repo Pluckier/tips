@@ -123,10 +123,12 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
       <div className="tip-header">
         <div className="tip-header-top">
-          <span className="tip-time">{race.time}</span>
-          <span className="tip-place">{race.place}</span>
+          <div className="tip-header-identifiers">
+            <span className="tip-time">{race.time}</span>
+            <span className="tip-place">{race.place}</span>
+          </div>
           {raceIndicator && (
-            <span style={{ marginLeft: '8px' }} title={raceIndicator.title}>
+            <span title={raceIndicator.title}>
               {raceIndicator.symbol}
             </span>
           )}
