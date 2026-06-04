@@ -98,14 +98,26 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     );
   };
 
-  const isHandicapEligible = useMemo(() => {
-    const detail = race.detail?.toLowerCase() || '';
-    return detail.includes('handicap') || 
-           detail.includes('class 1') || 
-           detail.includes('nursery');
-  }, [race.detail]);
+  const raceIndicator = useMemo(() => {
+    if (!showHandicapsOnly) return null;
 
-  const showWarning = showHandicapsOnly && !isHandicapEligible;
+    const detail = race.detail?.toLowerCase() || '';
+    const runnerCount = (race.horses || []).length;
+    const isHandicapOrNursery = detail.includes('handicap') || detail.includes('nursery');
+    const isClass1 = detail.includes('class 1');
+
+    if (isClass1) return { symbol: '👑', title: 'Class 1 Race' };
+    if (isHandicapOrNursery && runnerCount >= 8) {
+      return { symbol: '⚖️🏆', title: 'Tricast Race (8+ Runners)' };
+    }
+    if (isHandicapOrNursery && runnerCount < 8) {
+      return { symbol: '⚖️', title: 'Handicap Race' };
+    }
+    if (!isHandicapOrNursery) {
+      return { symbol: '🚫', title: 'Not a Handicap, Class 1, or Nursery' };
+    }
+    return null;
+  }, [race.detail, race.horses, showHandicapsOnly]);
 
   return (
     <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
@@ -113,7 +125,11 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
         <div className="tip-header-top">
           <span className="tip-time">{race.time}</span>
           <span className="tip-place">{race.place}</span>
-          {showWarning && <span style={{ marginLeft: '8px' }} title="Not a Handicap, Class 1, or Nursery">🚫</span>}
+          {raceIndicator && (
+            <span style={{ marginLeft: '8px' }} title={raceIndicator.title}>
+              {raceIndicator.symbol}
+            </span>
+          )}
         </div>
         <div className="tip-race-info">
           {race.detail} ({race.going})
