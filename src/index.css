@@ -74,6 +74,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 .tip-card:hover {
   border-color: var(--card-hover-border);
 }
@@ -180,6 +181,12 @@ body {
 .tip-header-identifiers {
   display: flex;
   align-items: center;
+}
+
+.tip-header-badges {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .tip-silks-inline {
@@ -618,7 +625,51 @@ body {
   font-weight: 600;
 }
 
-.tip-header-badges {
-  display: flex;
-  align-items: center;
+/* Tip Runner List Styles */
+.tip-runner-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 0; }
+.tip-runner-identity { display: flex; align-items: center; flex-wrap: nowrap; overflow: hidden; }
+.tip-runner-no { font-size: 0.9rem; opacity: 0.7; }
+.tip-runner-name { margin: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.tip-runner-reasons { margin-left: 6px; display: inline-flex; gap: 2px; vertical-align: middle; }
+.tip-runner-odds { font-weight: bold; margin-left: 10px; white-space: nowrap; }
+
+/* Movement Indicators */
+.movement-up { color: #ef4444; margin-left: 4px; font-size: 0.85em; font-weight: bold; }
+.movement-down { color: #3b82f6; margin-left: 4px; font-size: 0.85em; font-weight: bold; }
+.movement-stable { color: var(--detail-text-color); margin-left: 4px; font-size: 0.85em; opacity: 0.5; }
+
+/* Untipped Section Styles */
+.untipped-footer { margin-top: 10px; }
+.untipped-header-text { 
+  text-align: center; 
+  font-size: 0.75rem; 
+  color: var(--detail-text-color); 
+  opacity: 0.8; 
+  font-style: italic; 
+  margin-bottom: 5px; 
+}
+.untipped-runner-row { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 1px 0; 
+  font-size: 0.75rem; 
+  color: var(--detail-text-color); 
+}
+.untipped-runner-identity { display: flex; align-items: center; flex-wrap: nowrap; overflow: hidden; }
+.untipped-runner-no { margin-right: 4px; }
+.untipped-runner-name { margin: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.untipped-runner-potential-symbols { display: inline-flex; gap: 2px; margin-left: 4px; opacity: 0.5; }
+.untipped-runner-potential-symbols .tip-reason-tag { font-size: 0.8em; }
+.untipped-runner-odds { font-weight: normal; margin-left: 10px; white-space: nowrap; }
+
+/* Mobile-specific adjustments for very narrow screens */
+@media (max-width: 400px) {
+  .tip-reason-tag {
+    font-size: 0.7rem;
+  }
+  
+  .untipped-runner-potential-symbols .tip-reason-tag {
+    font-size: 0.7rem;
+  }
 }
