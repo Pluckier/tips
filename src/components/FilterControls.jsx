@@ -42,14 +42,14 @@ const FilterControls = ({
 
         <button
           onClick={() => setIsChatVisible(prev => !prev)}
-          className={`filter-toggle-btn ${isChatVisible ? 'active' : ''}`}
+          className={`filter-toggle-btn symbol-toggle ${isChatVisible ? 'active' : ''}`}
           title="Toggle live chat for these races"
         >
           💬
         </button>
         <button
           onClick={() => setShowUpcomingOnly(prev => !prev)}
-          className={`filter-toggle-btn ${showUpcomingOnly ? 'active' : ''}`}
+          className={`filter-toggle-btn symbol-toggle ${showUpcomingOnly ? 'active' : ''}`}
           title="Show only races that haven't run yet"
         >
           🕒 Upcoming
@@ -74,7 +74,7 @@ const FilterControls = ({
         <div className="place-filters-row">
           <button
             onClick={() => setShowHandicapsOnly(prev => !prev)}
-            className={`filter-toggle-btn ${showHandicapsOnly ? 'active' : ''}`}
+            className={`filter-toggle-btn symbol-toggle ${showHandicapsOnly ? 'active' : ''}`}
             title="Show only Handicaps, Class 1 or Nursery races"
           >
             🏆 Handicaps

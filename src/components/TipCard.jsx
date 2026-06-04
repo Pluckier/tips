@@ -163,8 +163,8 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                     >
                       {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
                     </a>
-                    <span className="tip-runner-name" style={{ margin: '0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
-                    <span className="tip-runner-reasons" style={{ marginLeft: '6px', display: 'inline-flex', gap: '2px', verticalAlign: 'middle' }}>
+                    <span className="tip-runner-name" style={{ margin: '0 0px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{runner.name}</span>
+                    <span className="tip-runner-reasons" style={{ marginLeft: '2px', display: 'inline-flex', gap: '0px', verticalAlign: 'middle' }}>
                         {runner.displayReasons.map(r => (
                           <span 
                             key={r.text} 
@@ -177,7 +177,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                       ))}
                     </span>
                   </div>
-                  <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                  <span className="tip-runner-odds" style={{ fontWeight: 'bold', marginLeft: '3px', whiteSpace: 'nowrap' }}>
                     {displayOdds}{movement}
                   </span>
                 </div>

@@ -248,7 +248,7 @@ function Tips() {
               <button
                 key={symbol}
                 onClick={() => toggleSymbol(symbol)}
-                className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
+                className={`filter-toggle-btn symbol-toggle ${selectedSymbols.has(symbol) ? 'active' : ''}`}
                 title={SYMBOL_DESCRIPTIONS[symbol] || `Filter by ${symbol}`}
               >
                 {symbol}
@@ -317,7 +317,7 @@ function Tips() {
               <button
                 key={symbol}
                 onClick={() => toggleSymbol(symbol)}
-                className={`filter-toggle-btn ${selectedSymbols.has(symbol) ? 'active' : ''}`}
+                className={`filter-toggle-btn symbol-toggle ${selectedSymbols.has(symbol) ? 'active' : ''}`}
                 title={SYMBOL_DESCRIPTIONS[symbol] || `Filter by ${symbol}`}
               >
                 {symbol}
