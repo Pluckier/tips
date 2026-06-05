@@ -104,7 +104,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
 
     if (isClass1) indicators.push({ symbol: '👑', title: 'Class 1 Race' });
     if (isHandicapOrNursery) indicators.push({ symbol: '⚖️', title: 'Handicap Race' });
-    if (isHandicapOrNursery && runnerCount >= 8) {
+    if ((isHandicapOrNursery || isClass1) && runnerCount >= 8) {
       indicators.push({ symbol: '🏆', title: 'Tricast Race (8+ Runners)' });
     }
 
