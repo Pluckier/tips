@@ -6,9 +6,9 @@ A modern, data-driven React application that analyzes daily racecards to identif
 
 - **Symbol-Driven Filtering**: A comprehensive suite of toggleable icons representing specific data insights:
   - 👑 Favourite | ⭐ Top Rated (3 Runs) | 🌟 2nd Rated (3 runs)
-  - 📊 Top Spike on chart | 📈 2nd Top Spike | 🏃 Only last run
-  - 🔥 Hot trainer | 💎 Massive spike | 🟣 Light Today
-  - 🚀 Improving | 🎯 Handicap newbie | 💀 Bottom rated
+  - 📊 Best Performance | 📈 2nd Best Performance | 🏃 Only last run
+  - 🔥 Hot trainer | 💎 Massive Performance | 🟣 Light Today
+  - 🚀 Improving | 🎯 Handicap newbie | 💀 Bottom Rated
 - **Dynamic Shortlisting**: Horses are categorized based on active symbols. If all symbols for a horse are toggled off, they automatically move from the "Shortlist" to the "All Runners" section.
 - **🏆 Tricast Analysis**: Dedicated filter for high-value betting opportunities. Automatically identifies Handicap races with 8+ runners (including NRs) and displays a real-time badge count.
 - **🕒 Live Upcoming Tracking**: Filters out races that have already run (with an 8-minute grace period). Features a dynamic badge count that decrements as races go off.

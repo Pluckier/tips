@@ -4,7 +4,12 @@ export const HOT_TRAINERS = [
   "G & J Moore", "R A Fahey", "Ian Williams", "A W Carroll",
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
   "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland",
-  "J & T Gosden", "C Appleby", "R M Beckett", "C Johnston", "H De Bromhead"
+  "J & T Gosden", "C Appleby", "R M Beckett", "C Johnston", "H De Bromhead",
+  "Gavin Cromwell", "Charlie Johnston", "Ralph Beckett", "John & Thady Gosden", 
+  "Neil Mulholland", "Andrew Balding", "Tony Carroll", "Dan Skelton", "Richard Hannon",
+  "Joseph Patrick O'Brien", "William Haggas", "Henry De Bromhead", "Gordon Elliott",
+  "Lucinda Russell & Michael Scudamore", "Tim Easterby", "Richard & Peter Fahey",
+  "Charlie Appleby", "Martin Keighley", "Ben Pauling"
 ];
 
 /**
@@ -204,7 +209,7 @@ export const getTipRunnersForRace = (race) => {
   });
 
   addHorse(favorite, '👑 Favourite');
-  addHorse(topRated, '📊 Top Spike on chart');
+  addHorse(topRated, '📊 Best Performance');
 
   const topPeak = calculatePeakRating(topRated);
   const secondPeak = secondRated ? calculatePeakRating(secondRated) : 0;
@@ -225,14 +230,14 @@ export const getTipRunnersForRace = (race) => {
   }
 
   if (topPeak > 0 && topPeak > (secondPeak * 1.9) && peakDistValid) {
-    addHorse(topRated, '💎 Massive spike');
+    addHorse(topRated, '💎 Massive Performance');
   }
 
-  if (secondRated) addHorse(secondRated, '📈 2nd Top Spike');
+  if (secondRated) addHorse(secondRated, '📈 2nd Best Performance');
   addHorse(topAvgRated, '⭐ Top Rated (3 Runs)');
   if (secondAvgRated) addHorse(secondAvgRated, '🌟 2nd Rated (3 runs)');
   addHorse(topLastRated, '🏃 Only last run');
-  addHorse(wildcard, '💀 Bottom rated');
+  addHorse(wildcard, '💀 Bottom Rated');
 
   return Array.from(tipMap.values()).sort((a, b) => {
     const valA = parseFloat(a.odds?.[a.odds.length - 1]) || 999;
