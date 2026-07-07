@@ -3,6 +3,7 @@ import { getTipRunnersForRace } from '../utils/raceUtils';
 
 const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHandicapsOnly }) => {
   const [isVanishing, setIsVanishing] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   // Monitor the race time to trigger the "vanish" animation just before 
   // the parent component filters it out (at the 8 minute mark)
@@ -115,6 +116,15 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     return indicators;
   }, [race.detail, race.horses, showHandicapsOnly]);
 
+  const handleDismiss = () => {
+    setIsVanishing(true);
+    setTimeout(() => {
+      setIsDismissed(true);
+    }, 800); // Wait for the vanish-puff animation (0.8s) to complete
+  };
+
+  if (isDismissed) return null;
+
   return (
     <div className={`tip-card ${isVanishing ? 'vanishing' : ''}`}>
       <div className="tip-header">
@@ -221,6 +231,27 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
         {tipRunners.length === 0 && untippedCount === 0 && (
           <div className="no-tips-msg">No runners found.</div>
         )}
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px', marginBottom: '5px' }}>
+          <button 
+            onClick={handleDismiss} 
+            className="tip-dismiss-btn"
+            style={{ 
+              background: 'transparent', 
+              border: 'none', 
+              cursor: 'pointer', 
+              fontSize: '1.2rem', 
+              opacity: 0.4,
+              transition: 'opacity 0.2s',
+              padding: '4px 12px'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '0.4'}
+            title="Dismiss tip"
+          >
+            ❌
+          </button>
+        </div>
       </div>
     </div>
   );
