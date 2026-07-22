@@ -5,11 +5,11 @@ export const HOT_TRAINERS = [
   "K R Burke", "E Bolger", "James Owen", "J P O'Brien", "P Twomey",
   "D Skelton", "P F Nicholls", "A M Balding", "W J Haggas", "N P Mulholland",
   "J & T Gosden", "C Appleby", "R M Beckett", "C Johnston", "H De Bromhead",
-  "Gavin Cromwell", "Charlie Johnston", "Ralph Beckett", "John & Thady Gosden", 
+  "Gavin Cromwell", "Charlie Johnston", "Ralph Beckett", "John & Thady Gosden",
   "Neil Mulholland", "Andrew Balding", "Tony Carroll", "Dan Skelton", "Richard Hannon",
   "Joseph Patrick O'Brien", "William Haggas", "Henry De Bromhead", "Gordon Elliott",
   "Lucinda Russell & Michael Scudamore", "Tim Easterby", "Richard & Peter Fahey",
-  "Charlie Appleby", "Martin Keighley", "Ben Pauling"
+  "Charlie Appleby", "Martin Keighley", "Ben Pauling", "Jonjo & A J O'Neill"
 ];
 
 /**
@@ -38,11 +38,11 @@ export const parseWeight = (w) => {
   if (!w) return 0;
   if (typeof w === 'number') return w;
   const s = w.toString().toLowerCase().replace(/\s+/g, '');
-  
+
   // Handle hyphen format: "11-07"
   const hyphenMatch = s.match(/(\d+)-(\d+)/);
   if (hyphenMatch) return (parseInt(hyphenMatch[1], 10) * 14) + parseInt(hyphenMatch[2], 10);
-  
+
   // Handle unit format: "9st 2lb" or "9st"
   const stMatch = s.match(/(\d+)st/);
   const lbMatch = s.match(/(\d+)lb/);
@@ -133,7 +133,7 @@ export const getTipRunnersForRace = (race) => {
   const sortedByAvg = [...allRunners].sort((a, b) => calculateAvgRating(b) - calculateAvgRating(a));
   const topAvgRated = sortedByAvg[0];
   const secondAvgRated = sortedByAvg[1];
-  
+
   const wildcard = [...sortedByAvg].reverse().find(h => {
     const lastOdd = parseFloat(h.odds?.[h.odds.length - 1]);
     return !isNaN(lastOdd) && lastOdd <= 250;
@@ -173,12 +173,12 @@ export const getTipRunnersForRace = (race) => {
     // Identify Underweight: Lighter than any past run with same Distance, Going, and Class
     const allowance = parseFloat(h.allowance) || 0;
     const currentWeight = parseWeight(h.weight) - allowance;
-    
+
     const comparablePast = (h.past || []).filter(p => {
       const pDist = parseDistanceToFurlongs(p.distance);
       const pGoing = p.going;
       const pClass = parseRaceClass(p.raceClass);
-      
+
       // Performance check: Won or within 1.5 lengths
       const pos = parseInt(p.position?.toString().split('/')[0], 10);
       const isWinner = pos === 1;
@@ -196,15 +196,15 @@ export const getTipRunnersForRace = (race) => {
           }
         }
       }
-      
+
       const match = pDist === todayFurlongs && pGoing === todayGoing && pClass === todayClass && withinMargin;
-      
+
       return match;
     });
 
     const pastWeights = comparablePast.map(p => parseWeight(p.weight)).filter(pw => pw > 0);
     if (currentWeight > 0 && pastWeights.length > 0 && currentWeight <= Math.min(...pastWeights)) {
-      addHorse(h, '🟣 Light Today');     
+      addHorse(h, '🟣 Light Today');
     }
   });
 
