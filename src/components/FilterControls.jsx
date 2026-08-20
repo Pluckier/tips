@@ -61,7 +61,7 @@ const FilterControls = ({
         >
           {isFullscreen ? '⛶ Windowed' : '⛶ Fullscreen'}
         </button>
-        <button 
+        <button
           onClick={toggleTheme}
           className="theme-toggle-btn"
         >
@@ -69,13 +69,13 @@ const FilterControls = ({
         </button>
       </div>
 
-      
+
       {uniquePlaces.length > 0 && (
         <div className="place-filters-row">
           <button
             onClick={() => setShowHandicapsOnly(prev => !prev)}
             className={`filter-toggle-btn symbol-toggle ${showHandicapsOnly ? 'active' : ''}`}
-            title="Show only Handicaps, Class 1 or Nursery races"
+            title="Show only Handicaps, Class 1, 2 or Nursery races"
           >
             🏆 Handicaps
           </button>

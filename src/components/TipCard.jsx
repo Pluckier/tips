@@ -44,15 +44,15 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
   const tipRunners = useMemo(() => {
     return allTipRunners.map(runner => {
       const reasonsArray = Array.from(runner.reasons);
-      const activeReasons = reasonsArray.filter(r => 
+      const activeReasons = reasonsArray.filter(r =>
         selectedSymbols.has(r.split(' ')[0])
       );
 
       // If no symbols are left active for this horse, it's no longer a 'tipped' horse
       if (activeReasons.length === 0) return null;
 
-      return { 
-        ...runner, 
+      return {
+        ...runner,
         displayReasons: reasonsArray.map(r => ({
           text: r,
           symbol: r.split(' ')[0],
@@ -99,7 +99,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
     const detail = race.detail?.toLowerCase() || '';
     const runnerCount = (race.horses || []).length;
     const isHandicapOrNursery = detail.includes('handicap') || detail.includes('nursery');
-    const isClass1 = detail.includes('class 1');
+    const isClass1 = detail.includes('class 1') || detail.includes('class 2');
 
     const indicators = [];
 
@@ -169,15 +169,15 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                     </a>
                     <span className="tip-runner-name">{runner.name}</span>
                     <span className="tip-runner-reasons">
-                        {runner.displayReasons.map(r => (
-                          <span 
-                            key={r.text} 
-                            className="tip-reason-tag" 
-                            title={r.text}
-                            style={{ opacity: r.isActive ? 1 : 0.4 }}
-                          >
-                            {r.symbol}
-                          </span>
+                      {runner.displayReasons.map(r => (
+                        <span
+                          key={r.text}
+                          className="tip-reason-tag"
+                          title={r.text}
+                          style={{ opacity: r.isActive ? 1 : 0.4 }}
+                        >
+                          {r.symbol}
+                        </span>
                       ))}
                     </span>
                   </div>
@@ -193,8 +193,8 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
         {untippedCount > 0 && (
           <div className="untipped-footer" style={{ marginTop: tipRunners.length > 0 ? '10px' : '0' }}>
             <div className="untipped-header-text">
-              {tipRunners.length > 0 
-                ? `${untippedCount} more horse${untippedCount !== 1 ? 's' : ''} run:` 
+              {tipRunners.length > 0
+                ? `${untippedCount} more horse${untippedCount !== 1 ? 's' : ''} run:`
                 : `All ${untippedCount} runners:`}
             </div>
             <div className="untipped-horses-list">
@@ -210,13 +210,13 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                       <span className="untipped-runner-no">{runner.number}.</span>
                       {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
                       <span className="untipped-runner-name">{runner.name}</span>
-                          {runner.allReasons && (
-                            <span className="untipped-runner-potential-symbols">
-                              {runner.allReasons.map(r => (
-                                <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
-                              ))}
-                            </span>
-                          )}
+                      {runner.allReasons && (
+                        <span className="untipped-runner-potential-symbols">
+                          {runner.allReasons.map(r => (
+                            <span key={r} className="tip-reason-tag" title={r}>{r.split(' ')[0]}</span>
+                          ))}
+                        </span>
+                      )}
                     </div>
                     <span className="untipped-runner-odds">
                       {displayOdds}{movement}
@@ -233,14 +233,14 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
         )}
 
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px', marginBottom: '5px' }}>
-          <button 
-            onClick={handleDismiss} 
+          <button
+            onClick={handleDismiss}
             className="tip-dismiss-btn"
-            style={{ 
-              background: 'transparent', 
-              border: 'none', 
-              cursor: 'pointer', 
-              fontSize: '1.2rem', 
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
               opacity: 0.4,
               transition: 'opacity 0.2s',
               padding: '4px 12px'
