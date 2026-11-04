@@ -33,16 +33,42 @@ export const useFetchTips = (selectedDate) => {
         const [year, month, day] = selectedDate.split('-');
         const dateStr = `${day}-${month}-${year}`;
 
-        const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
-        
-        const response = await fetch(url, { 
-          cache: 'no-store'
-        });
-        if (!response.ok) {
-          throw new Error(`Could not fetch tips for ${dateStr}`);
+        let data = null;
+
+        // STRATEGY A: Attempt to fetch and decompress the .json.gz file
+        try {
+          const response = await fetch(
+            `https://www.pluckier.co.uk/${dateStr}-races.json.gz`,
+            { cache: 'no-store', signal: abortController.signal }
+          );
+
+          if (!response.ok) throw new Error(`Gzipped file missing on server`);
+
+          // Decompress the binary body stream natively
+          const decompressionStream = new DecompressionStream('gzip');
+          const decompressedStream = response.body.pipeThrough(decompressionStream);
+
+          data = await new Response(decompressedStream).json();
+        } catch (gzipErr) {
+          // If the error was a deliberate user abort, break execution immediately
+          if (gzipErr.name === 'AbortError') return;
+
+          console.warn('Gzip fetch or parsing failed, trying uncompressed fallback...', gzipErr);
+
+          // STRATEGY B: Fallback to the uncompressed .json file
+          const fallbackResponse = await fetch(
+            `https://www.pluckier.co.uk/${dateStr}-races.json`,
+            { cache: 'no-store', signal: abortController.signal }
+          );
+
+          if (!fallbackResponse.ok) {
+            throw new Error(`Could not fetch tips for ${dateStr} in any format`);
+          }
+
+          data = await fallbackResponse.json();
         }
 
-        const data = await response.json();
+        // Apply data if either strategy succeeded
         setTips(data);
         setLastRefreshTime(Date.now());
       } catch (err) {
