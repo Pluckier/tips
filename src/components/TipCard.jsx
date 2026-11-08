@@ -165,7 +165,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                       rel="noopener noreferrer"
                       title={`View ${runner.name} in main app`}
                     >
-                      {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" />}
+                      {runner.silks && <img src={runner.silks.replace('https://www.attheraces.com', 'https://pluckier-silks.tonykennah.workers.dev')} alt="silks" className="tip-silks-inline-small" />}
                     </a>
                     <span className="tip-runner-name">{runner.name}</span>
                     <span className="tip-runner-reasons">
@@ -208,7 +208,7 @@ const TipCard = ({ race, selectedDate, showUpcomingOnly, selectedSymbols, showHa
                   <div key={runner.name} className="untipped-runner-row">
                     <div className="untipped-runner-identity">
                       <span className="untipped-runner-no">{runner.number}.</span>
-                      {runner.silks && <img src={runner.silks} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
+                      {runner.silks && <img src={runner.silks.replace('https://www.attheraces.com', 'https://pluckier-silks.tonykennah.workers.dev')} alt="silks" className="tip-silks-inline-small" style={{ opacity: 0.6 }} />}
                       <span className="untipped-runner-name">{runner.name}</span>
                       {runner.allReasons && (
                         <span className="untipped-runner-potential-symbols">
