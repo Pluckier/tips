@@ -33,9 +33,13 @@ export const useFetchTips = (selectedDate) => {
         const [year, month, day] = selectedDate.split('-');
         const dateStr = `${day}-${month}-${year}`;
 
-        const url = `https://www.pluckier.co.uk/${dateStr}-races.json`;
-        
-        const response = await fetch(url, { 
+        const MS = 15 * 60 * 1000;
+        const delayToken = Math.floor(Date.now() / MS);
+        const cacheBuster = `?v=${delayToken}`;
+
+        const url = `https://pluckier-cdn.tonykennah.workers.dev/${dateStr}-races.json.gz${cacheBuster}`;
+
+        const response = await fetch(url, {
           cache: 'no-store'
         });
         if (!response.ok) {
